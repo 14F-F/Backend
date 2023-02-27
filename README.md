@@ -1,3 +1,6 @@
-# Backend
+# Backend applikáció
 
-- Kész van már?
+#### Használt technológia: *[Node.JS](https://nodejs.org/en/about/)*
+
+
+
