@@ -48,7 +48,7 @@ const validations = {
         });
     },
     getAllByCategoryId(req,res){
-        const id = req.params.CategoryID;
+        const id = req.params.id;
         const sql ='SELECT * FROM test WHERE categoryid = ?';
         connection.query(
             sql,
