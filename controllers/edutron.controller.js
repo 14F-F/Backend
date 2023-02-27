@@ -1,8 +1,20 @@
 const connection = require('../config/db');
 
 const validations = {
-    getAll(req,res){
+    getAllTest(req,res){
         let sql = 'select * from test';
+        connection.query(sql,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknow error'
+                })
+            }else {
+                res.send(data);
+            }
+        });
+    },
+    getAllCategory(req,res){
+        let sql = 'select * from category';
         connection.query(sql,(err,data)=>{
             if (err){
                 res.status(500).send({
@@ -35,7 +47,7 @@ const validations = {
             }
         });
     },
-    getAllByCategory(req,res){
+    getAllByCategoryId(req,res){
         const id = req.params.CategoryID;
         const sql ='SELECT * FROM test WHERE categoryid = ?';
         connection.query(
