@@ -97,6 +97,7 @@ const validations = {
             }
         });
     },
+
     createTest(req,res){
         if ( validate(req,res) ) { return; }
         const newTest = {
@@ -107,29 +108,8 @@ const validations = {
             CreatorID: req.body.CreatorID,
             CreatedDate: req.body.CreatedDate
         };
-        const newQuestion = {
-            QuestionText: req.body.QuestionText,
-            CategoryID: req.body.CategoryID
-        };
-        const newAnswer = {
-            AnswerText: req.body.AnswerText,
-            Correct: req.body.Correct
-        };
-        const newTnQ = {
-            TestID: req.body.TestID,
-            QuestionID: req.body.QuestionID
-        };
-        const newQnA = {
-            AnswerID: req.body.AnswerID,
-            QuestionID: req.body.QuestionID,
-        };
-        const testsql = 'INSERT INTO test SET ? ';
-        const questionsql = 'INSERT INTO question SET ? ';
-        const answersql ='INSERT INTO answer SET ? ';
-        const TnQsql = 'INSERT INTO test_question SET ? ';
-        const QnAsql = 'INSERT INTO question_answer SET ? ';
-        // Új teszt felvitele
-        connection.query(testsql,newTest,(err,data)=>{
+        const sql = 'INSERT INTO test SET ? ';
+        connection.query(sql,newTest,(err,data)=>{
             if (err){
                 res.status(500).send({
                     message: err.message || 'Unknown error'
@@ -143,84 +123,55 @@ const validations = {
                 ); 
             }
         });
-        //  Kérdések 
-        for (let question = 0; question < questions.length; question++) {
-            connection.query(questionsql,questions[question],(err,data)=>{
-                if (err){
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                }else {
-                    res.send(
-                        {
-                            id: data.insertId,
-                            ...newQuestion,
-                        }
-                    ); 
-                }
-            });
-        //  Teszt-Kérdés kapcsolótábla
-            connection.query(TnQsql,newTest,(err,data)=>{
-                if (err){
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                }else {
-                    res.send(
-                        {
-                            id: data.insertId,
-                            ...newTnQ,
-                        }
-                    ); 
-                }
-            });
-        //  Válaszok
-            for (let answer = 0; answer < answers.length; answer++) {
-                connection.query(answersql,answers[answer],(err,data)=>{
-                    if (err){
-                        res.status(500).send({
-                            message: err.message || 'Unknown error'
-                        })
-                    }else {
-                        res.send(
-                            {
-                                id: data.insertId,
-                                ...newAnswer,
-                            }
-                        ); 
-                    }
-                });
-        // Kérdés-Válasz kapcsolótábla
-                connection.query(QnAsql,newTest,(err,data)=>{
-                    if (err){
-                        res.status(500).send({
-                            message: err.message || 'Unknown error'
-                        })
-                    }else {
-                        res.send(
-                            {
-                                id: data.insertId,
-                                ...newQnA,
-                            }
-                        ); 
-                    }
-                });
-                
-            }
-            
-        }
-
     },
     createQuestion(req,res){
+        if ( validate(req,res) ) { return; }
         const newQuestion = {
             QuestionText: req.body.QuestionText,
-            CategoryID: req.body.CategoryID
+            CategoryID: req.body.CategoryID,
+            PhotoID: req.body.PhotoID
         };
+        const sql = 'INSERT INTO question SET ? ';
+        connection.query(sql,newQuestion,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        id: data.insertId,
+                        ...newQuestion,
+                    }
+                ); 
+            }
+        });
+
+    },
+    createAnswer(req,res){
+        if ( validate(req,res) ) { return; }
         const newAnswer = {
-            AnswerText: req.body.AnswerText,
+            AnswerText: req.body.QuestionText,
             Correct: req.body.Correct
         };
+        const sql = 'INSERT INTO answer SET ? ';
+        connection.query(sql,newAnswer,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        id: data.insertId,
+                        ...newAnswer,
+                    }
+                ); 
+            }
+        });
+
     },
+
     updateTest(req,res){
         if ( validate(req,res) ) { return; }
         const id = req.params.id;
@@ -283,15 +234,48 @@ const validations = {
                     }
                     res.send({
                         id: id,
-                        ...test
+                        ...question
                     });
                 }
             }
         );
     },
+    updateAnswer(req,res){
+        if ( validate(req,res) ) { return; }
+        const id = req.params.id;
+        const answer = {
+            Correct: req.body.Correct,
+            AnswerText: req.body.AnswerText
+        }
+        const sql='update answer set answertext = ? where id = ?';
+        connection.query(
+            sql,
+            [answer.AnswerText,answer.Correct],
+            (err,data) => {
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found question witd id: ${req.params.id}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                        id: id,
+                        ...answer
+                    });
+                }
+            }
+        );
+    },
+    
     deleteTest(req,res){
         const id = req.params.id;
         const sql = 'delete from test where id = ?';
+        const sqlt ='delete from test_question where TestID = ?';
         connection.query(
             sql,
             id,
@@ -303,7 +287,7 @@ const validations = {
                 }else {
                     if (data.affectedRows == 0){
                         res.status(404).send({
-                            message : `Not found test witd id: ${req.params.id}.`
+                            message : `Not found test with id: ${req.params.id}.`
                         });
                         return;
                     }
@@ -313,8 +297,78 @@ const validations = {
                 }
             }
         );
+        connection.query(
+            sqlt,
+            id,
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found test key in the connection table with id: ${req.params.id}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : 'Test key was deleted successfully!'
+                    });
+                }
+            }
+        );
+    },
+    deleteQuestion(req,res){
+        const id = req.params.id;
+        const sql = 'delete from question where id = ?';
+        connection.query(
+            sql,
+            id,
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found question witd id: ${req.params.id}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : 'Question was deleted successfully!'
+                    });
+                }
+            }
+        );
+    },
+    deleteAnswer(req,res){
+        const id = req.params.id;
+        const sql = 'delete from answer where id = ?';
+        connection.query(
+            sql,
+            id,
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found answer witd id: ${req.params.id}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : 'Answer was deleted successfully!'
+                    });
+                }
+            }
+        );
     }
-
 }
 
 function validate(req,res){      
@@ -324,13 +378,19 @@ function validate(req,res){
         });
         return true;
     }
-    if (req.body.Name == ''){
+    if (req.body.Name != ''){
         if (req.body.Name.length > 32) {
             res.status(400).send({
-            message : 'Name required and cant be shorter than 32 digits!'
+            message : 'Name cant be shorter than 32 digits!'
         });
         }
         return true;
+    }
+    else
+    {
+        res.status(400).send({
+            message : 'Name required!'
+        });
     }
     if (req.body.SolvingCode.length > 16){
         res.status(400).send({
@@ -364,7 +424,7 @@ function validate(req,res){
     }
     catch {
         res.status(400).send({
-            message : 'CreatedDate is not in the correct form'
+            message : 'CreatedDate is not in the correct form (parse error)'
         });
         return true;
     }
