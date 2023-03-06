@@ -6,7 +6,7 @@ const validations = {
         connection.query(sql,(err,data)=>{
             if (err){
                 res.status(500).send({
-                    message: err.message || 'Unknow error'
+                    message: err.message || 'Unknown error'
                 })
             }else {
                 res.send(data);
@@ -18,7 +18,7 @@ const validations = {
         connection.query(sql,(err,data)=>{
             if (err){
                 res.status(500).send({
-                    message: err.message || 'Unknow error'
+                    message: err.message || 'Unknown error'
                 })
             }else {
                 res.send(data);
@@ -34,7 +34,7 @@ const validations = {
             (err,data)=>{
             if (err){
                 res.status(500).send({
-                    message: err.message || 'Unknow error'
+                    message: err.message || 'Unknown error'
                 })
             }else {
                 if (data.length == 0){
@@ -56,7 +56,7 @@ const validations = {
             (err,data)=>{
             if (err){
                 res.status(500).send({
-                    message: err.message || 'Unknow error'
+                    message: err.message || 'Unknown error'
                 })
             }else {
                 if (data.length == 0){
@@ -84,7 +84,7 @@ const validations = {
             (err,data)=>{
             if (err){
                 res.status(500).send({
-                    message: err.message || 'Unknow error'
+                    message: err.message || 'Unknown error'
                 })
             }else {
                 if (data.length == 0){
@@ -132,7 +132,7 @@ const validations = {
         connection.query(testsql,newTest,(err,data)=>{
             if (err){
                 res.status(500).send({
-                    message: err.message || 'Unknow error'
+                    message: err.message || 'Unknown error'
                 })
             }else {
                 res.send(
@@ -148,7 +148,7 @@ const validations = {
             connection.query(questionsql,questions[question],(err,data)=>{
                 if (err){
                     res.status(500).send({
-                        message: err.message || 'Unknow error'
+                        message: err.message || 'Unknown error'
                     })
                 }else {
                     res.send(
@@ -163,7 +163,7 @@ const validations = {
             connection.query(TnQsql,newTest,(err,data)=>{
                 if (err){
                     res.status(500).send({
-                        message: err.message || 'Unknow error'
+                        message: err.message || 'Unknown error'
                     })
                 }else {
                     res.send(
@@ -179,7 +179,7 @@ const validations = {
                 connection.query(answersql,answers[answer],(err,data)=>{
                     if (err){
                         res.status(500).send({
-                            message: err.message || 'Unknow error'
+                            message: err.message || 'Unknown error'
                         })
                     }else {
                         res.send(
@@ -194,7 +194,7 @@ const validations = {
                 connection.query(QnAsql,newTest,(err,data)=>{
                     if (err){
                         res.status(500).send({
-                            message: err.message || 'Unknow error'
+                            message: err.message || 'Unknown error'
                         })
                     }else {
                         res.send(
@@ -239,12 +239,45 @@ const validations = {
             (err,data) => {
                 if (err){
                     res.status(500).send({
-                        message: err.message || 'Unknow error'
+                        message: err.message || 'Unknown error'
                     })
                 }else {
                     if (data.affectedRows == 0){
                         res.status(404).send({
                             message : `Not found test witd id: ${req.params.id}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                        id: id,
+                        ...test
+                    });
+                }
+            }
+        );
+    },
+    updateQuestion(req,res){
+        if ( validate(req,res) ) { return; }
+        const id = req.params.id;
+        const question = {
+            CategoryID: req.body.CategoryID,
+            PhotoID: req.body.PhotoID,
+            CreatorID: req.body.CreatorID,
+            QuestionText: req.body.QuestionText
+        }
+        const sql='update question set categoryid = ?, photoid = ?, CreatorID = ?, questiontext = ? where id = ?';
+        connection.query(
+            sql,
+            [question.CategoryID,question.PhotoID,question.CreatorID,question.QuestionText],
+            (err,data) => {
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found question witd id: ${req.params.id}.`
                         });
                         return;
                     }
@@ -265,7 +298,7 @@ const validations = {
             (err,data)=>{
                 if (err){
                     res.status(500).send({
-                        message: err.message || 'Unknow error'
+                        message: err.message || 'Unknown error'
                     })
                 }else {
                     if (data.affectedRows == 0){
