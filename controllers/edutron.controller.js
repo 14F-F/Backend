@@ -69,6 +69,34 @@ const validations = {
             }
         });
     },
+    getAllTestDataById(req,res){
+        const id = req.params.id;
+        const sql =
+        'SELECT * FROM test '+
+        'INNER JOIN test_question ON test.ID = test_question.TestID '+
+        'INNER JOIN question ON test_question.QuestionID = question.ID '+
+        'INNER JOIN question_answer ON question.ID = question_answer.QuestionID '+
+        'INNER JOIN answer ON question_answer.AnswerID = answer.ID '+
+        'WHERE test.ID = ?';
+        connection.query(
+            sql,
+            id,
+            (err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknow error'
+                })
+            }else {
+                if (data.length == 0){
+                    res.status(404).send({
+                        message:'Not found.'
+                    });
+                    return;
+                }
+                res.send(data);
+            }
+        });
+    },
     createTest(req,res){
         if ( validate(req,res) ) { return; }
         const newTest = {
@@ -79,8 +107,29 @@ const validations = {
             CreatorID: req.body.CreatorID,
             CreatedDate: req.body.CreatedDate
         };
-        const sql = 'insert into test set ?';
-        connection.query(sql,newTest,(err,data)=>{
+        const newQuestion = {
+            QuestionText: req.body.QuestionText,
+            CategoryID: req.body.CategoryID
+        };
+        const newAnswer = {
+            AnswerText: req.body.AnswerText,
+            Correct: req.body.Correct
+        };
+        const newTnQ = {
+            TestID: req.body.TestID,
+            QuestionID: req.body.QuestionID
+        };
+        const newQnA = {
+            AnswerID: req.body.AnswerID,
+            QuestionID: req.body.QuestionID,
+        };
+        const testsql = 'INSERT INTO test SET ? ';
+        const questionsql = 'INSERT INTO question SET ? ';
+        const answersql ='INSERT INTO answer SET ? ';
+        const TnQsql = 'INSERT INTO test_question SET ? ';
+        const QnAsql = 'INSERT INTO question_answer SET ? ';
+        // Új teszt felvitele
+        connection.query(testsql,newTest,(err,data)=>{
             if (err){
                 res.status(500).send({
                     message: err.message || 'Unknow error'
@@ -89,13 +138,90 @@ const validations = {
                 res.send(
                     {
                         id: data.insertId,
-                        ...newTest
+                        ...newTest,
                     }
                 ); 
             }
         });
+        //  Kérdések 
+        for (let question = 0; question < questions.length; question++) {
+            connection.query(questionsql,questions[question],(err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknow error'
+                    })
+                }else {
+                    res.send(
+                        {
+                            id: data.insertId,
+                            ...newQuestion,
+                        }
+                    ); 
+                }
+            });
+        //  Teszt-Kérdés kapcsolótábla
+            connection.query(TnQsql,newTest,(err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknow error'
+                    })
+                }else {
+                    res.send(
+                        {
+                            id: data.insertId,
+                            ...newTnQ,
+                        }
+                    ); 
+                }
+            });
+        //  Válaszok
+            for (let answer = 0; answer < answers.length; answer++) {
+                connection.query(answersql,answers[answer],(err,data)=>{
+                    if (err){
+                        res.status(500).send({
+                            message: err.message || 'Unknow error'
+                        })
+                    }else {
+                        res.send(
+                            {
+                                id: data.insertId,
+                                ...newAnswer,
+                            }
+                        ); 
+                    }
+                });
+        // Kérdés-Válasz kapcsolótábla
+                connection.query(QnAsql,newTest,(err,data)=>{
+                    if (err){
+                        res.status(500).send({
+                            message: err.message || 'Unknow error'
+                        })
+                    }else {
+                        res.send(
+                            {
+                                id: data.insertId,
+                                ...newQnA,
+                            }
+                        ); 
+                    }
+                });
+                
+            }
+            
+        }
+
     },
-    update(req,res){
+    createQuestion(req,res){
+        const newQuestion = {
+            QuestionText: req.body.QuestionText,
+            CategoryID: req.body.CategoryID
+        };
+        const newAnswer = {
+            AnswerText: req.body.AnswerText,
+            Correct: req.body.Correct
+        };
+    },
+    updateTest(req,res){
         if ( validate(req,res) ) { return; }
         const id = req.params.id;
         const test = {
@@ -130,7 +256,7 @@ const validations = {
             }
         );
     },
-    delete(req,res){
+    deleteTest(req,res){
         const id = req.params.id;
         const sql = 'delete from test where id = ?';
         connection.query(
@@ -213,10 +339,3 @@ function validate(req,res){
 }
 
 module.exports = validations;
-
-// SELECT * FROM test,test_question,question,question_answer,answer
-// INNER JOIN test_question ON test.ID = test_question.TestID
-// INNER JOIN test_question ON question.ID = test_question.QuestionID
-// INNER JOIN question_answer ON question.ID = question_answer.QuestionID
-// INNER JOIN question_answer ON answer.ID = question_answer.AnswerID
-// WHERE test.ID = ?;

@@ -5,12 +5,14 @@ module.exports = (app) =>{
 
     router.get('/test',edutron.getAllTest);
     router.get('/category',edutron.getAllCategory);
-    router.post('/create',edutron.createTest);
-    router.put('/:id',edutron.update);
-    router.delete('/:id',edutron.delete);
+    router.post('/createTest',edutron.createTest);
+    router.post('/createQuestion',edutron.createQuestion);
+    router.put('/updateTest/:id',edutron.updateTest);
+    router.delete('/deleteTest/:id',edutron.deleteTest);
 
-    router.get('/category/:id',edutron.getAllByCategoryId); // nem működik XD
+    router.get('/category/:id',edutron.getAllByCategoryId);
     router.get('/test/:id',edutron.getTestById);
+    router.get('/testdata/:id',edutron.getAllTestDataById);
 
     app.use('/api/edutron',router);
 }
