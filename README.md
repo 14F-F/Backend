@@ -6,3 +6,5 @@
 
 ## KÉSZ VAN MÁR?
 
+## Mindjárt xdd
+
