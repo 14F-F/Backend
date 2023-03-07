@@ -275,7 +275,6 @@ const validations = {
     deleteTest(req,res){
         const id = req.params.id;
         const sql = 'delete from test where id = ?';
-        const sqlt ='delete from test_question where TestID = ?';
         connection.query(
             sql,
             id,
@@ -293,27 +292,6 @@ const validations = {
                     }
                     res.send({
                        message : 'Test was deleted successfully!'
-                    });
-                }
-            }
-        );
-        connection.query(
-            sqlt,
-            id,
-            (err,data)=>{
-                if (err){
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                }else {
-                    if (data.affectedRows == 0){
-                        res.status(404).send({
-                            message : `Not found test key in the connection table with id: ${req.params.id}.`
-                        });
-                        return;
-                    }
-                    res.send({
-                       message : 'Test key was deleted successfully!'
                     });
                 }
             }
