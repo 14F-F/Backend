@@ -186,7 +186,7 @@ const validations = {
         const sql='update test set Name = ?, SolvingCode = ?, CategoryID = ?, Visibility = ?, CreatorID = ?, CreatedDate = ? where id = ?';
         connection.query(
             sql,
-            [test.Name, test.SolvingCode, test.CategoryID, test.Visibility, test.CreatorID, test.CreatedDate],
+            [test.Name, test.SolvingCode, test.CategoryID, test.Visibility, test.CreatorID, test.CreatedDate,id],
             (err,data) => {
                 if (err){
                     res.status(500).send({
@@ -219,7 +219,7 @@ const validations = {
         const sql='update question set categoryid = ?, photoid = ?, CreatorID = ?, questiontext = ? where id = ?';
         connection.query(
             sql,
-            [question.CategoryID,question.PhotoID,question.CreatorID,question.QuestionText],
+            [question.CategoryID,question.PhotoID,question.CreatorID,question.QuestionText,id],
             (err,data) => {
                 if (err){
                     res.status(500).send({
@@ -250,7 +250,7 @@ const validations = {
         const sql='update answer set answertext = ? where id = ?';
         connection.query(
             sql,
-            [answer.AnswerText,answer.Correct],
+            [answer.AnswerText,answer.Correct,id],
             (err,data) => {
                 if (err){
                     res.status(500).send({
@@ -378,41 +378,57 @@ function validate(req,res){
         });
         return true;
     }
-    if (req.body.Name != ''){
-        if (req.body.Name.length > 32) {
+    if (req.body.Name != undefined && req.body.Name.length > 32) {
             res.status(400).send({
-            message : 'Name cant be shorter than 32 digits!'
-        });
-        }
-        return true;
-    }
-    else
-    {
-        res.status(400).send({
-            message : 'Name required!'
-        });
-    }
-    if (req.body.SolvingCode.length > 16){
-        res.status(400).send({
-            message : 'Solving Code must be shorter than 16 digits!'
+            message : 'Name cant be longer than 32 digits!'
         });
         return true;
     }
-    if (req.body.CategoryID.length > 11){
-        res.status(400).send({
-            message : 'Category ID must be shorter than 11 digits!'
+    if (req.body.PhotoID != undefined && req.body.PhotoID.length > 255) {
+            res.status(400).send({
+            message : 'PhotoID cant be longer than 255 digits!'
         });
         return true;
     }
-    if (req.body.Visibility.length > 11){
-        res.status(400).send({
-            message : 'Visibility must be shorter than 11 digits!'
+    if (req.body.QuestionText != undefined && req.body.QuestionText.length > 255) {
+            res.status(400).send({
+            message : 'QuestionText cant be longer than 255 digits!'
         });
         return true;
     }
-    if (req.body.CreatorID.length > 11){
+    if (req.body.AnswerText != undefined &&req.body.AnswerText.length > 255) {
+            res.status(400).send({
+            message : 'AnswerText cant be longer than 255 digits!'
+        });
+        return true;
+    }   
+    if (req.body.Correct != undefined && (req.body.Correct == 1 || req.body.Correct == 0)) {
+            res.status(400).send({
+            message : 'Correct cant be longer than 1 digits!'
+        });
+        return true;
+    }   
+    if (req.body.SolvingCode != undefined && req.body.SolvingCode.length > 16){
         res.status(400).send({
-            message : 'Creator ID must be shorter than 11 digits!'
+            message : 'Solving Code cant be longer than 16 digits!'
+        });
+        return true;
+    }
+    if (req.body.CategoryID != undefined && req.body.CategoryID.length > 11){
+        res.status(400).send({
+            message : 'Category ID cant be longer than 11 digits!'
+        });
+        return true;
+    }
+    if (req.body.Visibility != undefined && req.body.Visibility.length > 11){
+        res.status(400).send({
+            message : 'Visibility cant be longer than 11 digits!'
+        });
+        return true;
+    }
+    if (req.body.CreatorID != undefined && req.body.CreatorID.length > 11){
+        res.status(400).send({
+            message : 'Creator ID cant be longer than 11 digits!'
         });
         return true;
     }
