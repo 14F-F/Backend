@@ -6,6 +6,58 @@ const LastIDs = {
 }
 
 const validations = {
+    // ONLY FOR TEST PURPOSES
+    getAllQuestion(req,res){
+        let sql = 'select * from question';
+        connection.query(sql,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(data);
+            }
+        });
+    },
+    getAllAnswer(req,res){
+        let sql = 'select * from answer';
+        connection.query(sql,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(data);
+            }
+        });
+    },
+    getAllTQID(req,res){
+        let sql = 'select * from test_question';
+        connection.query(sql,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(data);
+            }
+        });
+    },
+    getAllQAID(req,res){
+        let sql = 'select * from question_answer';
+        connection.query(sql,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(data);
+            }
+        });
+    },
+
+
+    
     getAllTest(req,res){
         let sql = 'select * from test';
         connection.query(sql,(err,data)=>{
