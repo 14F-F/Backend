@@ -1,4 +1,9 @@
 const connection = require('../config/db');
+const LastIDs = {
+    TestID: 0,
+    QuestionID: 0,
+    AnswerID: 0
+}
 
 const validations = {
     getAllTest(req,res){
@@ -114,13 +119,15 @@ const validations = {
                 res.status(500).send({
                     message: err.message || 'Unknown error'
                 })
-            }else {
+            }
+            else {
                 res.send(
                     {
                         id: data.insertId,
                         ...newTest,
                     }
-                ); 
+                );
+                LastIDs.TestID = data.insertId; 
             }
         });
     },
@@ -131,43 +138,41 @@ const validations = {
             CategoryID: req.body.CategoryID,
             PhotoID: req.body.PhotoID
         };
+        const newTQ = {
+            TestID: LastIDs.TestID,
+            QuestionID: LastIDs.QuestionID
+        };
         const sql = 'INSERT INTO question SET ? ';
         connection.query(sql,newQuestion,(err,data)=>{
             if (err){
                 res.status(500).send({
                     message: err.message || 'Unknown error'
                 })
-            }else {
+            }
+            else {
                 res.send(
                     {
                         id: data.insertId,
-                        ...newQuestion,
+                        ...newQuestion
                     }
-                ); 
+                );
+                LastIDs.QuestionID = data.insertId;
+                connection.query(sql,newTQ,(err,data)=>{
+                    if (err){
+                        res.status(500).send({
+                            message: err.message || 'Unknown error'
+                        })
+                    }else {
+                        res.send(
+                            {
+                                id: data.insertId,
+                                ...newTQ
+                            },
+                        ); 
+                    }
+                }); 
             }
         });
-        if(req.body.QuestionText != undefined && req.body.Visibility != undefined){
-            const TQ = {
-                TestID:req.body.test,
-                QuestionID: req.body.test
-            }
-            const sql2 = 'INSERT INTO test_question SET ?';
-            connection.query(sql2,TQ,(err,data)=>{
-                if (err){
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                }else {
-                    res.send(
-                        {
-                            id: data.insertId,
-                            ...TQ,
-                        }
-                    ); 
-                }
-            });
-
-        }
 
     },
     createAnswer(req,res){
@@ -176,19 +181,40 @@ const validations = {
             AnswerText: req.body.QuestionText,
             Correct: req.body.Correct
         };
+        const newQA = {
+            QuestionID : LastIDs.QuestionID,
+            AnswerID : LastIDs.AnswerID
+        };
         const sql = 'INSERT INTO answer SET ? ';
         connection.query(sql,newAnswer,(err,data)=>{
             if (err){
                 res.status(500).send({
                     message: err.message || 'Unknown error'
                 })
-            }else {
+            }
+            else {
                 res.send(
                     {
                         id: data.insertId,
-                        ...newAnswer,
+                        ...newAnswer
                     }
-                ); 
+                );
+                LastIDs.AnswerID = data.insertId;
+                connection.query(sql,newQA,(err,data)=>{
+                    if (err){
+                        res.status(500).send({
+                            message: err.message || 'Unknown error'
+                        })
+                    }else {
+                        res.send(
+                            {
+                                id: data.insertId,
+                                ...newQA
+                            },
+                            
+                        ); 
+                    }
+                }); 
             }
         });
 
