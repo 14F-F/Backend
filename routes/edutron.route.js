@@ -6,7 +6,7 @@ module.exports = (app) =>{
 
     router.get('/tests',edutron.getAllTest);
     router.get('/categories',edutron.getAllCategory);
-
+    // ONLY FOR TEST PURPOSES
     router.get('/questions',edutron.getAllQuestion);
     router.get('/answers',edutron.getAllAnswer);
     router.get('/TQID',edutron.getAllTQID);
