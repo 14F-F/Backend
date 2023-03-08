@@ -25,6 +25,7 @@ module.exports = (app) =>{
 
     // User methods
 
+    router.get('/users',user.getAllUser);
     router.post('/register',user.createUser);
     router.put('/updateUser/:id',user.updateUser);
     router.delete('deleteUser/:id',user.deleteUser);

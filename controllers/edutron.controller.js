@@ -146,6 +146,28 @@ const validations = {
                 ); 
             }
         });
+        if(req.body.QuestionText != undefined && req.body.Visibility != undefined){
+            const TQ = {
+                TestID:req.body.test,
+                QuestionID: req.body.test
+            }
+            const sql2 = 'INSERT INTO test_question SET ?';
+            connection.query(sql2,TQ,(err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    res.send(
+                        {
+                            id: data.insertId,
+                            ...TQ,
+                        }
+                    ); 
+                }
+            });
+
+        }
 
     },
     createAnswer(req,res){

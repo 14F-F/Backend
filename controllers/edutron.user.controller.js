@@ -2,6 +2,18 @@ const connection = require('../config/db');
 var crypto = require('crypto');
 
 const validations ={
+    getAllUser(req,res){
+        let sql = 'select * from user';
+        connection.query(sql,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(data);
+            }
+        });
+    },
     createUser(req,res){
         if ( validate(req,res) ) { return; }
         const newUser = {
@@ -43,7 +55,7 @@ const validations ={
         const sql='update test set Name = ?, PwHash = ?, Role = ?, InstituteID = ?, Email = ?, CreatedAt = ? where id = ?';
         connection.query(
             sql,
-            [user.Name,user.PwHash,user.Role,user.InstituteID,user.Email,user.CreatedAt],
+            [user.Name,user.PwHash,user.Role,user.InstituteID,user.Email,user.CreatedAt,id],
             (err,data) => {
                 if (err){
                     res.status(500).send({
