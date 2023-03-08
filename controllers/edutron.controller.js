@@ -143,6 +143,7 @@ const validations = {
             QuestionID: LastIDs.QuestionID
         };
         const sql = 'INSERT INTO question SET ? ';
+        const sql2 = 'INSERT INTO test_question SET ? ';
         connection.query(sql,newQuestion,(err,data)=>{
             if (err){
                 res.status(500).send({
@@ -157,7 +158,7 @@ const validations = {
                     }
                 );
                 LastIDs.QuestionID = data.insertId;
-                connection.query(sql,newTQ,(err,data)=>{
+                connection.query(sql2,newTQ,(err,data)=>{
                     if (err){
                         res.status(500).send({
                             message: err.message || 'Unknown error'
@@ -186,6 +187,7 @@ const validations = {
             AnswerID : LastIDs.AnswerID
         };
         const sql = 'INSERT INTO answer SET ? ';
+        const sql2 = 'INSERT INTO question_answer SET ? ';
         connection.query(sql,newAnswer,(err,data)=>{
             if (err){
                 res.status(500).send({
@@ -200,7 +202,7 @@ const validations = {
                     }
                 );
                 LastIDs.AnswerID = data.insertId;
-                connection.query(sql,newQA,(err,data)=>{
+                connection.query(sql2,newQA,(err,data)=>{
                     if (err){
                         res.status(500).send({
                             message: err.message || 'Unknown error'
