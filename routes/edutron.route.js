@@ -16,6 +16,14 @@ module.exports = (app) =>{
     router.post('/createQuestion',edutron.createQuestion);
     router.post('/createAnswer',edutron.createAnswer);
 
+    router.post('/addTQID',edutron.AddTQID);
+    router.post('/addQAID',edutron.AddQAID);
+
+    router.get('/logs',edutron.getLogs);
+    router.post('/testlog',edutron.logTest);
+    router.delete('/clearlogs',edutron.deleteAllLogs);
+
+
     router.put('/updateTest/:id',edutron.updateTest);
     router.put('/updateQuestion/:id',edutron.updateQuestion);
     router.put('/updateAnswer/:id',edutron.updateAnswer);

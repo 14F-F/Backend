@@ -2,7 +2,7 @@ const connection = require('../config/db');
 var crypto = require('crypto');
 
 const validations ={
-    getAllUser(req,res){
+    getAllUser(res){
         let sql = 'select * from user';
         connection.query(sql,(err,data)=>{
             if (err){

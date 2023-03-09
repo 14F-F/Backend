@@ -55,6 +55,43 @@ const validations = {
             }
         });
     },
+    getLogs(req,res){
+        let sql = 'select * from user_answer';
+        connection.query(sql,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }
+            else
+            {
+                res.send(data);
+            }
+        });
+    },
+    deleteAllLogs(req,res){
+        const sql = 'delete from user_answer';
+        connection.query(
+            sql,
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found any logs.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : 'Logs deleted successfully!'
+                    });
+                }
+            }
+        );
+    },
 
 
     
@@ -155,6 +192,33 @@ const validations = {
         });
     },
 
+
+    logTest(req,res){
+        const id = req.params.id;
+        const sql ='INSERT INTO user_answer SET ?';
+        const log = {
+            UserID: req.params.UserID,
+            TestID: req.params.TestID,
+            QuestionID: req.params.QuestionID,
+            AnswerID: req.params.AnswerID,
+            Result: req.params.Result
+        }
+        connection.query(sql,log,(err,data)=>{
+            if(err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }
+            else {
+                res.send(
+                    {
+                        id:data.insertId,
+                        ...log,
+                    }
+                );
+            }
+        });
+    },
     createTest(req,res){
         if ( validate(req,res) ) { return; }
         const newTest = {
@@ -190,12 +254,7 @@ const validations = {
             CategoryID: req.body.CategoryID,
             PhotoID: req.body.PhotoID
         };
-        const newTQ = {
-            TestID: LastIDs.TestID,
-            QuestionID: LastIDs.QuestionID
-        };
         const sql = 'INSERT INTO question SET ? ';
-        const sql2 = 'INSERT INTO test_question SET ? ';
         connection.query(sql,newQuestion,(err,data)=>{
             if (err){
                 res.status(500).send({
@@ -210,23 +269,29 @@ const validations = {
                     }
                 );
                 LastIDs.QuestionID = data.insertId;
-                connection.query(sql2,newTQ,(err,data)=>{
-                    if (err){
-                        res.status(500).send({
-                            message: err.message || 'Unknown error'
-                        })
-                    }else {
-                        res.send(
-                            {
-                                id: data.insertId,
-                                ...newTQ
-                            },
-                        ); 
-                    }
-                }); 
             }
         });
 
+    },
+    AddTQID(req,res){
+        const newTQ = {
+            TestID: LastIDs.TestID,
+            QuestionID: LastIDs.QuestionID
+        };
+        const sql2 = 'INSERT INTO test_question SET ? ';
+        connection.query(sql2,newTQ,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        ...newTQ
+                    },
+                ); 
+            }
+        }); 
     },
     createAnswer(req,res){
         if ( validate(req,res) ) { return; }
@@ -234,12 +299,7 @@ const validations = {
             AnswerText: req.body.QuestionText,
             Correct: req.body.Correct
         };
-        const newQA = {
-            QuestionID : LastIDs.QuestionID,
-            AnswerID : LastIDs.AnswerID
-        };
         const sql = 'INSERT INTO answer SET ? ';
-        const sql2 = 'INSERT INTO question_answer SET ? ';
         connection.query(sql,newAnswer,(err,data)=>{
             if (err){
                 res.status(500).send({
@@ -254,24 +314,30 @@ const validations = {
                     }
                 );
                 LastIDs.AnswerID = data.insertId;
-                connection.query(sql2,newQA,(err,data)=>{
-                    if (err){
-                        res.status(500).send({
-                            message: err.message || 'Unknown error'
-                        })
-                    }else {
-                        res.send(
-                            {
-                                id: data.insertId,
-                                ...newQA
-                            },
-                            
-                        ); 
-                    }
-                }); 
             }
         });
-
+    },
+    AddQAID(req,res){
+        const newQA = {
+            QuestionID : LastIDs.QuestionID,
+            AnswerID : LastIDs.AnswerID
+        };
+        const sql2 = 'INSERT INTO question_answer SET ? ';
+        connection.query(sql2,newQA,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        id: data.insertId,
+                        ...newQA
+                    },
+                    
+                ); 
+            }
+        }); 
     },
 
     updateTest(req,res){
