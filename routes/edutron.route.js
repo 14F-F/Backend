@@ -1,7 +1,10 @@
 module.exports = (app) =>{
     const router = require('express').Router();
     const edutron = require('../controllers/edutron.controller');
-    const user = require('../controllers/edutron.user.controller')
+    const user = require('../controllers/edutron.user.controller');
+
+
+    router.post('/getToken',user.genToken);
 
 
     router.get('/tests',edutron.getAllTest);

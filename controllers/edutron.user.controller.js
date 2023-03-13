@@ -1,5 +1,7 @@
 const connection = require('../config/db');
 var crypto = require('crypto');
+const dotenv = require('dotenv');
+const jsontoken = require('jsonwebtoken');
 
 const validations ={
     getAllUser(res){
@@ -19,6 +21,7 @@ const validations ={
         const newUser = {
             Name: req.body.Name,
             PwHash: crypto.createHash('md5').update(req.body.Password).digest('hex'),
+            Token: req.body.Token,
             Role: req.body.Role,
             InstituteID: req.body.InstituteID,
             Email: req.body.Email,
@@ -118,6 +121,15 @@ const validations ={
                 res.send(data);
             }
         });
+    },
+    genToken(req,res){
+        let jwtSecretKey = process.env.JWT_SECRET_KEY;
+        let data = {
+            time: Date(),
+            UserID: req.body.UserID
+        }
+        const token = jwt.sign(data,jwtSecretKey);
+        res.send(token);
     }
 }
 function validate(req,res){
@@ -175,6 +187,21 @@ function validate(req,res){
             message : 'CreatedAt is not in the correct form (parse error)'
         });
         return true;
+    }
+    let tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
+    let jwtSecretKey = process.env.JWT_SECRET_KEY;
+    try{
+        const token = req.header(tokenHeaderKey);
+        const verified = jwt.verify(token,jwtSecretKey);
+        if (verified) {
+            return res.send("Token successfully verified!");
+        }
+        else{
+            return res.status(401).send(error);
+        }
+    }
+    catch{
+        return res.status(401).send(error);
     }
     return false;
 }
