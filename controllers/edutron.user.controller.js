@@ -20,12 +20,11 @@ const validations ={
         if ( validate(req,res) ) { return; }
         const newUser = {
             Name: req.body.Name,
-            PwHash: crypto.createHash('md5').update(req.body.Password).digest('hex'),
-            Token: req.body.Token,
+            PwHash: crypto.createHash('md5').update(req.body.Name+req.body.Password).digest('hex'),
             Role: req.body.Role,
             InstituteID: req.body.InstituteID,
             Email: req.body.Email,
-            CreatedAt: req.body.CreatedAt
+            CreatedAt: Date.now()
         };
         const sql = 'INSERT INTO user SET ? ';
         // Új felhasználó felvitele
@@ -106,30 +105,34 @@ const validations ={
         );
     },
     loggedIn(req,res){
-        if (validate(req,res)) {return;}
+        // if (validate(req,res)) {return;}     // TODO
         const loginData = {
             UserName : req.body.UserName,
-            PwHash : crypto.createHash('md5').update(req.body.Password).digest('hex')
-        };
-        let sql = 'select * from user';
+            PwHash : crypto.createHash('md5').update(req.body.UserName+req.body.Password).digest('hex')
+        }
+
+        console.log(PwHash);
+        // const token = validations.genToken(req);     // TODO
+        let sql = 'select * from user where pwhash in ${loginData.PwHash}'; // TODO
         connection.query(sql,(err,data)=>{
             if (err){
                 res.status(500).send({
                     message: err.message || 'Unknown error'
                 })
             }else {
-                res.send(data);
+                res.send(loginData,token);
             }
         });
     },
-    genToken(req,res){
-        let jwtSecretKey = process.env.JWT_SECRET_KEY;
+    genToken(req,){
+        let TokenKey = process.env.TOKEN_KEY;
         let data = {
-            time: Date(),
-            UserID: req.body.UserID
+            time: Date.now(),
+            UserID: req.params.id
         }
-        const token = jwt.sign(data,jwtSecretKey);
-        res.send(token);
+        console.log(data);
+        const token = jsontoken.sign(data,TokenKey,{expiresIn:"1d"});
+        return token;
     }
 }
 function validate(req,res){
