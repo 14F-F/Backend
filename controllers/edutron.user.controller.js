@@ -117,23 +117,31 @@ const validations ={
                     message: err.message || 'Unknown error'
                 })
             }else {
-                if (affectedRows>0) {
+                if (data.length=1) {
                     res.status(200).send(
+                        "Successful login!"
                         );
                     return true;
                 }
-                else if(affectedRows=0) {
+                else if(data.length=0) {
                     res.status(201).send(
-                        false
+                        "User not found."
                     );
                     return true;
                 }
-                else{
+                else if(data.length>1){
                     res.status(500).send(
                         'User is logged in more than once.'
                     );
                     return false;
                 }
+                else {
+                    res.status(500).send(
+                        'Unknown error.'
+                    );
+                    return false;
+                }
+
 
             }
         });
