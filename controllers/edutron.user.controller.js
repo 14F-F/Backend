@@ -110,28 +110,42 @@ const validations ={
             UserName : req.body.UserName,
             PwHash : crypto.createHash('md5').update(req.body.UserName + req.body.Password).digest('hex')
         }
-
-        console.log(PwHash);
-        // const token = validations.genToken(req);     // TODO
-        let sql = `select * from user where pwhash = ${loginData.PwHash}`; // TODO
-        connection.query(sql,(err,data)=>{
+        let sql = `select * from user where pwhash = "${loginData.PwHash}"`;
+        connection.query(sql,UserName,(err,data)=>{
             if (err){
                 res.status(500).send({
                     message: err.message || 'Unknown error'
                 })
             }else {
-                res.send(loginData,token);
+                if (affectedRows>0) {
+                    res.status(200).send(
+                        );
+                    return true;
+                }
+                else if(affectedRows=0) {
+                    res.status(201).send(
+                        false
+                    );
+                    return true;
+                }
+                else{
+                    res.status(500).send(
+                        'User is logged in more than once.'
+                    );
+                    return false;
+                }
+
             }
         });
     },
-    genToken(req,){
+    genToken(req){
         let TokenKey = process.env.TOKEN_KEY;
         let data = {
             time: Date.now(),
             UserID: req.params.id
         }
         console.log(data);
-        const token = jsontoken.sign(data,TokenKey,{expiresIn:"1d"});
+        let token = jsontoken.sign(data,`${TokenKey}`,{expiresIn:"1d"});
         return token;
     }
 }
