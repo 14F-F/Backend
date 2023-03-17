@@ -20,7 +20,7 @@ const validations ={
         if ( validate(req,res) ) { return; }
         const newUser = {
             Name: req.body.Name,
-            PwHash: crypto.createHash('md5').update(req.body.Name+req.body.Password).digest('hex'),
+            PwHash: crypto.createHash('md5').update(req.body.Name + req.body.Password).digest('hex'),
             Role: req.body.Role,
             InstituteID: req.body.InstituteID,
             Email: req.body.Email,
@@ -108,12 +108,12 @@ const validations ={
         // if (validate(req,res)) {return;}     // TODO
         const loginData = {
             UserName : req.body.UserName,
-            PwHash : crypto.createHash('md5').update(req.body.UserName+req.body.Password).digest('hex')
+            PwHash : crypto.createHash('md5').update(req.body.UserName + req.body.Password).digest('hex')
         }
 
         console.log(PwHash);
         // const token = validations.genToken(req);     // TODO
-        let sql = 'select * from user where pwhash in ${loginData.PwHash}'; // TODO
+        let sql = `select * from user where pwhash = ${loginData.PwHash}`; // TODO
         connection.query(sql,(err,data)=>{
             if (err){
                 res.status(500).send({
