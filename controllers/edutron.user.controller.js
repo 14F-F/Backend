@@ -17,7 +17,7 @@ const validations ={
         });
     },
     createUser(req,res){
-        if ( validate(req,res) ) { return; }
+        // if ( validate(req,res) ) { return; }
         const newUser = {
             Name: req.body.Name,
             PwHash: crypto.createHash('md5').update(req.body.Name + req.body.Password).digest('hex'),
@@ -108,38 +108,52 @@ const validations ={
         // if (validate(req,res)) {return;}     // TODO
         const loginData = {
             UserName : req.body.UserName,
-            PwHash : crypto.createHash('md5').update(req.body.UserName + req.body.Password).digest('hex')
+            PwHash : PwHashCheck()
         }
+        function PwHashCheck(){
+            if (req.body.Password != "") {
+                PwHash = crypto.createHash('md5').update(req.body.UserName + req.body.Password).digest('hex');
+            }
+            else{
+                PwHash = "";
+            }
+            return PwHash;
+        } 
         let sql = `select * from user where pwhash = "${loginData.PwHash}"`;
-        connection.query(sql,UserName,(err,data)=>{
+        connection.query(sql,loginData,(err,data)=>{
             if (err){
                 res.status(500).send({
                     message: err.message || 'Unknown error'
                 })
-            }else {
-                if (data.length=1) {
-                    res.status(200).send(
-                        "Successful login!"
+            }
+            else 
+            {
+                if (userValidation(req, res,loginData)) {
+                    if (data.length==1) {
+                        res.send(201,
+                            "Successful login!"
+                            );
+                            console.log(data);
+                        return true;
+                    }
+                    else if(data.length==0) {
+                        res.send(500,
+                            "User not created."
                         );
-                    return true;
-                }
-                else if(data.length=0) {
-                    res.status(400).send(
-                        "User not found."
-                    );
-                    return true;
-                }
-                else if(data.length>1){
-                    res.status(500).send(
-                        'User is logged in more than once.'
-                    );
-                    return false;
-                }
-                else {
-                    res.status(500).send(
-                        'Unknown error.'
-                    );
-                    return false;
+                        return true;
+                    }
+                    else if(data.length>1){
+                        res.send(500,
+                            'User is logged in more than once.'
+                        );
+                        return false;
+                    }
+                    else {
+                        res.send(500,
+                            'Unknown error.'
+                        );
+                        return false;
+                    }
                 }
 
 
@@ -156,6 +170,11 @@ const validations ={
         let token = jsontoken.sign(data,`${TokenKey}`,{expiresIn:"1d"});
         return token;
     }
+}
+function userValidation(req,res,loginData)
+{
+    if(loginData.UserName == ""){res.send(400,"Username is empty");return false;}
+    if(loginData.PwHash == ""){res.send(400,"Password is empty");return false;}
 }
 function validate(req,res){
     if (JSON.stringify(req.body) == '{}'){
