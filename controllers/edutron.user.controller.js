@@ -124,7 +124,7 @@ const validations ={
                     return true;
                 }
                 else if(data.length=0) {
-                    res.status(201).send(
+                    res.status(400).send(
                         "User not found."
                     );
                     return true;
