@@ -7,67 +7,22 @@ const LastIDs = {
 
 const validations = {
     // ONLY FOR TEST PURPOSES
-    getAllQuestion(req,res){
-        let sql = 'select * from question';
-        connection.query(sql,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }else {
-                res.send(data);
+
+    getAllFromTable(req,res){
+        const table = req.params.table;
+        connection.query(
+            'call getAllDataFromTable(?)',
+            (err,data)=>{
+                if(err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }
+                else{
+                    res.send(data);
+                }
             }
-        });
-    },
-    getAllAnswer(req,res){
-        let sql = 'select * from answer';
-        connection.query(sql,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }else {
-                res.send(data);
-            }
-        });
-    },
-    getAllTQID(req,res){
-        let sql = 'select * from test_question';
-        connection.query(sql,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }else {
-                res.send(data);
-            }
-        });
-    },
-    getAllQAID(req,res){
-        let sql = 'select * from question_answer';
-        connection.query(sql,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }else {
-                res.send(data);
-            }
-        });
-    },
-    getLogs(req,res){
-        let sql = 'select * from user_answer';
-        connection.query(sql,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }
-            else
-            {
-                res.send(data);
-            }
-        });
+        );
     },
     deleteAllLogs(req,res){
         const sql = 'delete from user_answer';
@@ -91,33 +46,6 @@ const validations = {
                 }
             }
         );
-    },
-
-
-    
-    getAllTest(req,res){
-        let sql = 'select * from test';
-        connection.query(sql,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }else {
-                res.send(data);
-            }
-        });
-    },
-    getAllCategory(req,res){
-        let sql = 'select * from category';
-        connection.query(sql,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }else {
-                res.send(data);
-            }
-        });
     },
     getTestById(req,res){
         const id = req.params.id;

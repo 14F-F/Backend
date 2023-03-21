@@ -161,13 +161,12 @@ const validations ={
         });
     },
     genToken(req){
-        let TokenKey = process.env.TOKEN_KEY;
         let data = {
             time: Date.now(),
             UserID: req.params.id
         }
         console.log(data);
-        let token = jsontoken.sign(data,`${TokenKey}`,{expiresIn:"1d"});
+        let token = jsontoken.sign(data,`14f`,{expiresIn:"1d"});
         return token;
     }
 }

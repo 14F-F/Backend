@@ -6,15 +6,6 @@ module.exports = (app) =>{
 
     router.post('/getToken',user.genToken);
 
-
-    router.get('/tests',edutron.getAllTest);
-    router.get('/categories',edutron.getAllCategory);
-    // ONLY FOR TEST PURPOSES
-    router.get('/questions',edutron.getAllQuestion);
-    router.get('/answers',edutron.getAllAnswer);
-    router.get('/TQID',edutron.getAllTQID);
-    router.get('/QAID',edutron.getAllQAID);
-
     router.post('/createTest',edutron.createTest);
     router.post('/createQuestion',edutron.createQuestion);
     router.post('/createAnswer',edutron.createAnswer);
