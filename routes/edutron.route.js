@@ -3,7 +3,7 @@ module.exports = (app) =>{
     const edutron = require('../controllers/edutron.controller');
     const user = require('../controllers/edutron.user.controller');
 
-
+    router.get('getAll/:tableName',edutron.getAllFromTable);
     router.post('/getToken',user.genToken);
 
     router.post('/createTest',edutron.createTest);

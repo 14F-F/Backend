@@ -9,9 +9,10 @@ const validations = {
     // ONLY FOR TEST PURPOSES
 
     getAllFromTable(req,res){
-        const table = req.params.table;
+        const table = req.params.tableName;
+        const sql = `SELECT * FROM "${table}"`;
         connection.query(
-            'call getAllDataFromTable(?)',
+            sql,
             (err,data)=>{
                 if(err){
                     res.status(500).send({
