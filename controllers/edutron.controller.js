@@ -10,7 +10,7 @@ const validations = {
 
     getAllFromTable(req,res){
         const table = req.params.tableName;
-        const sql = `SELECT * FROM "${table}"`;
+        const sql = `SELECT * FROM ${table}`;
         connection.query(
             sql,
             (err,data)=>{
