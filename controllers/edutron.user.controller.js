@@ -3,249 +3,228 @@ var crypto = require('crypto');
 const dotenv = require('dotenv');
 const jsontoken = require('jsonwebtoken');
 
-const validations ={
-    getAllUser(res){
+const validations = {
+    getAllUser(res) {
         let sql = 'select * from user';
-        connection.query(sql,(err,data)=>{
-            if (err){
+        connection.query(sql, (err, data) => {
+            if (err) {
                 res.status(500).send({
                     message: err.message || 'Unknown error'
                 })
-            }else {
+            } else {
                 res.send(data);
             }
         });
     },
-    createUser(req,res){
-        // if ( validate(req,res) ) { return; }
-        const newUser = {
-            Name: req.body.Name,
-            PwHash: crypto.createHash('md5').update(req.body.Name + req.body.Password).digest('hex'),
-            Role: req.body.Role,
-            InstituteID: req.body.InstituteID,
-            Email: req.body.Email,
-            CreatedAt: Date.now()
-        };
-        const sql = 'INSERT INTO user SET ? ';
-        // Új felhasználó felvitele
-        connection.query(sql,newUser,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }else {
-                res.send(
-                    {
-                        id: data.insertId,
-                        ...newUser,
-                    }
-                ); 
-            }
-        });
-    },
-    updateUser(req,res){
-        if ( validate(req,res) ) { return; }
-        const id = req.params.id;
-        const user = {
-            Name: req.body.Name,
-            PwHash: req.body.PwHash,
-            Role: req.body.Role,
-            InstituteID: req.body.InstituteID,
-            Email: req.body.Email,
-            CreatedAt: req.body.CreatedAt
-        }
-        const sql='update test set Name = ?, PwHash = ?, Role = ?, InstituteID = ?, Email = ?, CreatedAt = ? where id = ?';
-        connection.query(
-            sql,
-            [user.Name,user.PwHash,user.Role,user.InstituteID,user.Email,user.CreatedAt,id],
-            (err,data) => {
-                if (err){
+    createUser(req, res) {
+        if (validate(req, res)) {
+            const newUser = {
+                Name: req.body.Name,
+                PwHash: crypto.createHash('md5').update(req.body.Name + req.body.Password).digest('hex'),
+                Role: req.body.Role,
+                InstituteID: req.body.InstituteID,
+                Email: req.body.Email,
+                CreatedAt: Date.now()
+            };
+            const sql = 'INSERT INTO user SET ? ';
+            // Új felhasználó felvitele
+            connection.query(sql, newUser, (err, data) => {
+                if (err) {
                     res.status(500).send({
                         message: err.message || 'Unknown error'
                     })
-                }else {
-                    if (data.affectedRows == 0){
-                        res.status(404).send({
-                            message : `Not found user witd id: ${req.params.id}.`
-                        });
-                        return;
-                    }
-                    res.send({
-                        id: id,
-                        ...user
-                    });
+                } else {
+                    res.send(
+                        {
+                            id: data.insertId,
+                            ...newUser,
+                        }
+                    );
                 }
+            });
+        }
+
+    },
+    updateUser(req, res) {
+        if (validate(req, res)) {
+            const id = req.params.id;
+            const user = {
+                Name: req.body.Name,
+                PwHash: req.body.PwHash,
+                Role: req.body.Role,
+                InstituteID: req.body.InstituteID,
+                Email: req.body.Email,
+                CreatedAt: req.body.CreatedAt
             }
-        );
+            const sql = 'update test set Name = ?, PwHash = ?, Role = ?, InstituteID = ?, Email = ?, CreatedAt = ? where id = ?';
+            connection.query(
+                sql,
+                [user.Name, user.PwHash, user.Role, user.InstituteID, user.Email, user.CreatedAt, id],
+                (err, data) => {
+                    if (err) {
+                        res.status(500).send({
+                            message: err.message || 'Unknown error'
+                        })
+                    } else {
+                        if (data.affectedRows == 0) {
+                            res.status(404).send({
+                                message: `Not found user witd id: ${req.params.id}.`
+                            });
+                            return;
+                        }
+                        res.send({
+                            id: id,
+                            ...user
+                        });
+                    }
+                }
+            );
+        }
     },
     /////////////////////////////////////////////////////////////
-    deleteUser(req,res){
+    deleteUser(req, res) {
         const id = req.params.id;
         const sql = 'delete from user where id = ?';
         connection.query(
             sql,
             id,
-            (err,data)=>{
-                if (err){
+            (err, data) => {
+                if (err) {
                     res.status(500).send({
                         message: err.message || 'Unknown error'
                     })
-                }else {
-                    if (data.affectedRows == 0){
+                } else {
+                    if (data.affectedRows == 0) {
                         res.status(404).send({
-                            message : `Not found user witd id: ${req.params.id}.`
+                            message: `Not found user witd id: ${req.params.id}.`
                         });
                         return;
                     }
                     res.send({
-                       message : 'User was deleted successfully!'
+                        message: 'User was deleted successfully!'
                     });
                 }
             }
         );
     },
-    loggedIn(req,res){
-        // if (validate(req,res)) {return;}     // TODO
-        const loginData = {
-            UserName : req.body.UserName,
-            PwHash : PwHashCheck()
-        }
-        function PwHashCheck(){
-            if (req.body.Password != "") {
-                PwHash = crypto.createHash('md5').update(req.body.UserName + req.body.Password).digest('hex');
+    loggedIn(req, res) {
+        if (validate(req, res)) {
+            const loginData = {
+                UserName: req.body.UserName,
+                PwHash: PwHashCheck()
             }
-            else{
-                PwHash = "";
+            function PwHashCheck() {
+                if (req.body.Password != "") {
+                    PwHash = crypto.createHash('md5').update(req.body.UserName + req.body.Password).digest('hex');
+                }
+                else {
+                    PwHash = "";
+                }
+                return PwHash;
             }
-            return PwHash;
-        } 
-        let sql = `select * from user where pwhash = "${loginData.PwHash}"`;
-        connection.query(sql,loginData,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }
-            else 
-            {
-                if (userValidation(req, res,loginData)) {
-                    if (data.length==1) {
-                        res.send(201,
-                            "Successful login!"
+            let sql = `select * from user where pwhash = "${loginData.PwHash}"`;
+            connection.query(sql, loginData, (err, data) => {
+                if (err) {
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }
+                else {
+                    if (userValidation(req, res, loginData)) {
+                        if (data.length == 1) {
+                            res.send(201,
+                                "Successful login!"
                             );
                             console.log(data);
-                        return true;
+                            return true;
+                        }
+                        else if (data.length == 0) {
+                            res.send(500,
+                                "User not created."
+                            );
+                            return true;
+                        }
+                        else if (data.length > 1) {
+                            res.send(500,
+                                'User is logged in more than once.'
+                            );
+                            return false;
+                        }
+                        else {
+                            res.send(500,
+                                'Unknown error.'
+                            );
+                            return false;
+                        }
                     }
-                    else if(data.length==0) {
-                        res.send(500,
-                            "User not created."
-                        );
-                        return true;
-                    }
-                    else if(data.length>1){
-                        res.send(500,
-                            'User is logged in more than once.'
-                        );
-                        return false;
-                    }
-                    else {
-                        res.send(500,
-                            'Unknown error.'
-                        );
-                        return false;
-                    }
+
+
                 }
-
-
-            }
-        });
+            });
+        }
     },
-    genToken(req){
+    genToken(req) {
         let data = {
             time: Date.now(),
             UserID: req.params.id
         }
         console.log(data);
-        let token = jsontoken.sign(data,`14f`,{expiresIn:"1d"});
+        let token = jsontoken.sign(data, `14f`, { expiresIn: "1d" });
         return token;
     }
 }
-function userValidation(req,res,loginData)
-{
-    if(loginData.UserName == ""){res.send(400,"Username is empty");return false;}
-    if(loginData.PwHash == ""){res.send(400,"Password is empty");return false;}
+function userValidation(req, res, loginData) {
+    if (loginData.UserName == "") { res.send(400, "Username is empty"); return false; }
+    if (loginData.PwHash == "") { res.send(400, "Password is empty"); return false; }
 }
-function validate(req,res){
-    if (JSON.stringify(req.body) == '{}'){
+function validate(req, res) {
+    if (JSON.stringify(req.body) == '{}') {
         res.status(400).send({
-            message : 'Content can not be empty!'
+            message: 'Content can not be empty!'
         });
-        return true;
     }
-    if (req.body.Name != ''){
+    if (req.body.Name != '' && req.body.Name != undefined) {
         if (req.body.Name.length > 50) {
             res.status(400).send({
-            message : 'Name cant be shorter than 50 digits!'
-        });
-        }
-        return true;
-    }
-    else
-    {
-        res.status(400).send({
-            message : 'Name required!'
-        });
-    }
-    if (req.body.PwHash.length > 50){
-        res.status(400).send({
-            message : 'PwHash generated wrong!'
-        });
-        return true;
-    }
-    if (req.body.InstituteID.length > 6){
-        res.status(400).send({
-            message : 'InstituteID is longer then expected!'
-        });
-        return true;
-    }
-    if (req.body.Email.length > 255){
-        res.status(400).send({
-            message : 'Email must be shorter than 255 characters!'
-        });
-        return true;
-    }
-    else if(!req.body.Email.contains('@') && !req.body.Email.contains('.')){
-        res.status(400).send({
-            message : 'Email is not in the correct format!'
-        });
-    }
-    try{
-        var date = new Date(req.body.CreatedAt)
-        var year = date.getFullYear();
-        var month = date.getMonth();
-        var day = date.getDay();
-    }
-    catch {
-        res.status(400).send({
-            message : 'CreatedAt is not in the correct form (parse error)'
-        });
-        return true;
-    }
-    let tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
-    let jwtSecretKey = process.env.JWT_SECRET_KEY;
-    try{
-        const token = req.header(tokenHeaderKey);
-        const verified = jwt.verify(token,jwtSecretKey);
-        if (verified) {
-            return res.send("Token successfully verified!");
-        }
-        else{
-            return res.status(401).send(error);
+                message: 'Name cant be shorter than 50 digits!'
+            });
         }
     }
-    catch{
-        return res.status(401).send(error);
+    if (req.body.PwHash != undefined && req.body.PwHash.length > 50) {
+        res.status(400).send({
+            message: 'PwHash generated wrong!'
+        });
     }
-    return false;
+    if (req.body.InstituteID != undefined && req.body.InstituteID.length > 6) {
+        res.status(400).send({
+            message: 'InstituteID is longer then expected!'
+        });
+    }
+    if (req.body.Email != undefined && req.body.Email.length > 255) {
+        res.status(400).send({
+            message: 'Email must be shorter than 255 characters!'
+        });
+    }
+    else if (req.body.Email != undefined && !req.body.Email.includes('@') && !req.body.Email.includes('.')) {
+        res.status(400).send({
+            message: 'Email is not in the correct format!'
+        });
+    }
+    console.log("validation was successful!")
+    // let tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
+    // let jwtSecretKey = process.env.JWT_SECRET_KEY;
+    // try{
+    //     const token = req.header(tokenHeaderKey);
+    //     const verified = jwt.verify(token,jwtSecretKey);
+    //     if (verified) {
+    //         return res.send("Token successfully verified!");
+    //     }
+    //     else{
+    //         return res.status(401).send(error);
+    //     }
+    // }
+    // catch{
+    //     return res.status(401).send(error);
+    // }
 }
 module.exports = validations;

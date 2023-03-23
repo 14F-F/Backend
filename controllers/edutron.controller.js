@@ -149,58 +149,59 @@ const validations = {
         });
     },
     createTest(req,res){
-        if ( validate(req,res) ) { return; }
-        const newTest = {
-            Name: req.body.Name,
-            SolvingCode: req.body.SolvingCode,
-            CategoryID: req.body.CategoryID,
-            Visibility: req.body.Visibility,
-            CreatorID: req.body.CreatorID,
-            CreatedDate: req.body.CreatedDate
-        };
-        const sql = 'INSERT INTO test SET ? ';
-        connection.query(sql,newTest,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }
-            else {
-                res.send(
-                    {
-                        id: data.insertId,
-                        ...newTest,
-                    }
-                );
-                LastIDs.TestID = data.insertId; 
-            }
-        });
+        if ( validate(req,res) ) { 
+            const newTest = {
+                Name: req.body.Name,
+                SolvingCode: req.body.SolvingCode,
+                CategoryID: req.body.CategoryID,
+                Visibility: req.body.Visibility,
+                CreatorID: req.body.CreatorID,
+                CreatedDate: req.body.CreatedDate
+            };
+            const sql = 'INSERT INTO test SET ? ';
+            connection.query(sql,newTest,(err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }
+                else {
+                    res.send(
+                        {
+                            id: data.insertId,
+                            ...newTest,
+                        }
+                    );
+                    LastIDs.TestID = data.insertId; 
+                }
+            });
+         }   
     },
     createQuestion(req,res){
-        if ( validate(req,res) ) { return; }
-        const newQuestion = {
-            QuestionText: req.body.QuestionText,
-            CategoryID: req.body.CategoryID,
-            PhotoID: req.body.PhotoID
-        };
-        const sql = 'INSERT INTO question SET ? ';
-        connection.query(sql,newQuestion,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }
-            else {
-                res.send(
-                    {
-                        id: data.insertId,
-                        ...newQuestion
-                    }
-                );
-                LastIDs.QuestionID = data.insertId;
-            }
-        });
-
+        if ( validate(req,res) ) { 
+            const newQuestion = {
+                QuestionText: req.body.QuestionText,
+                CategoryID: req.body.CategoryID,
+                PhotoID: req.body.PhotoID
+            };
+            const sql = 'INSERT INTO question SET ? ';
+            connection.query(sql,newQuestion,(err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }
+                else {
+                    res.send(
+                        {
+                            id: data.insertId,
+                            ...newQuestion
+                        }
+                    );
+                    LastIDs.QuestionID = data.insertId;
+                }
+            });
+         }
     },
     AddTQID(req,res){
         const newTQ = {
@@ -223,28 +224,30 @@ const validations = {
         }); 
     },
     createAnswer(req,res){
-        if ( validate(req,res) ) { return; }
-        const newAnswer = {
-            AnswerText: req.body.QuestionText,
-            Correct: req.body.Correct
-        };
-        const sql = 'INSERT INTO answer SET ? ';
-        connection.query(sql,newAnswer,(err,data)=>{
-            if (err){
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            }
-            else {
-                res.send(
-                    {
-                        id: data.insertId,
-                        ...newAnswer
-                    }
-                );
-                LastIDs.AnswerID = data.insertId;
-            }
-        });
+        if ( validate(req,res) ) { 
+            const newAnswer = {
+                AnswerText: req.body.QuestionText,
+                Correct: req.body.Correct
+            };
+            const sql = 'INSERT INTO answer SET ? ';
+            connection.query(sql,newAnswer,(err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }
+                else {
+                    res.send(
+                        {
+                            id: data.insertId,
+                            ...newAnswer
+                        }
+                    );
+                    LastIDs.AnswerID = data.insertId;
+                }
+            });
+         }
+
     },
     AddQAID(req,res){
         const newQA = {
@@ -270,43 +273,44 @@ const validations = {
     },
 
     updateTest(req,res){
-        if ( validate(req,res) ) { return; }
-        const id = req.params.id;
-        const test = {
-            Name: req.body.Name,
-            SolvingCode: req.body.SolvingCode,
-            CategoryID: req.body.CategoryID,
-            Visibility: req.body.Visibility,
-            CreatorID: req.body.CreatorID,
-            CreatedDate: req.body.CreatedDate
-        }
-        const sql='update test set Name = ?, SolvingCode = ?, CategoryID = ?, Visibility = ?, CreatorID = ?, CreatedDate = ? where id = ?';
-        connection.query(
-            sql,
-            [test.Name, test.SolvingCode, test.CategoryID, test.Visibility, test.CreatorID, test.CreatedDate,id],
-            (err,data) => {
-                if (err){
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                }else {
-                    if (data.affectedRows == 0){
-                        res.status(404).send({
-                            message : `Not found test witd id: ${req.params.id}.`
-                        });
-                        return;
-                    }
-                    res.send({
-                        id: id,
-                        ...test
-                    });
-                }
+        if ( validate(req,res) ) { 
+            const id = req.params.id;
+            const test = {
+                Name: req.body.Name,
+                SolvingCode: req.body.SolvingCode,
+                CategoryID: req.body.CategoryID,
+                Visibility: req.body.Visibility,
+                CreatorID: req.body.CreatorID,
+                CreatedDate: req.body.CreatedDate
             }
-        );
+            const sql='update test set Name = ?, SolvingCode = ?, CategoryID = ?, Visibility = ?, CreatorID = ?, CreatedDate = ? where id = ?';
+            connection.query(
+                sql,
+                [test.Name, test.SolvingCode, test.CategoryID, test.Visibility, test.CreatorID, test.CreatedDate,id],
+                (err,data) => {
+                    if (err){
+                        res.status(500).send({
+                            message: err.message || 'Unknown error'
+                        })
+                    }else {
+                        if (data.affectedRows == 0){
+                            res.status(404).send({
+                                message : `Not found test witd id: ${req.params.id}.`
+                            });
+                            return;
+                        }
+                        res.send({
+                            id: id,
+                            ...test
+                        });
+                    }
+                }
+            );
+         }   
     },
     updateQuestion(req,res){
-        if ( validate(req,res) ) { return; }
-        const id = req.params.id;
+        if ( validate(req,res) ) { 
+            const id = req.params.id;
         const question = {
             CategoryID: req.body.CategoryID,
             PhotoID: req.body.PhotoID,
@@ -336,37 +340,39 @@ const validations = {
                 }
             }
         );
+         }    
     },
     updateAnswer(req,res){
-        if ( validate(req,res) ) { return; }
-        const id = req.params.id;
-        const answer = {
-            Correct: req.body.Correct,
-            AnswerText: req.body.AnswerText
-        }
-        const sql='update answer set answertext = ? where id = ?';
-        connection.query(
-            sql,
-            [answer.AnswerText,answer.Correct,id],
-            (err,data) => {
-                if (err){
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                }else {
-                    if (data.affectedRows == 0){
-                        res.status(404).send({
-                            message : `Not found question witd id: ${req.params.id}.`
-                        });
-                        return;
-                    }
-                    res.send({
-                        id: id,
-                        ...answer
-                    });
-                }
+        if ( validate(req,res) ) { 
+            const id = req.params.id;
+            const answer = {
+                Correct: req.body.Correct,
+                AnswerText: req.body.AnswerText
             }
-        );
+            const sql='update answer set answertext = ? where id = ?';
+            connection.query(
+                sql,
+                [answer.AnswerText,answer.Correct,id],
+                (err,data) => {
+                    if (err){
+                        res.status(500).send({
+                            message: err.message || 'Unknown error'
+                        })
+                    }else {
+                        if (data.affectedRows == 0){
+                            res.status(404).send({
+                                message : `Not found question witd id: ${req.params.id}.`
+                            });
+                            return;
+                        }
+                        res.send({
+                            id: id,
+                            ...answer
+                        });
+                    }
+                }
+            );
+         }   
     },
     
     deleteTest(req,res){
