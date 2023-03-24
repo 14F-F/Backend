@@ -4,7 +4,7 @@ module.exports = (app) =>{
     const user = require('../controllers/edutron.user.controller');
 
     router.get('/getAll/:tableName',edutron.getAllFromTable);
-    router.post('/getToken',user.genToken);
+    router.post('/sessionCreate',user.createSession);
 
     router.post('/createTest',edutron.createTest);
     router.post('/createQuestion',edutron.createQuestion);
@@ -13,7 +13,6 @@ module.exports = (app) =>{
     router.post('/addTQID',edutron.AddTQID);
     router.post('/addQAID',edutron.AddQAID);
 
-    router.get('/logs',edutron.getLogs);
     router.post('/testlog',edutron.logTest);
     router.delete('/clearlogs',edutron.deleteAllLogs);
 
