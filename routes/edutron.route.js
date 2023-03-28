@@ -4,7 +4,6 @@ module.exports = (app) =>{
     const user = require('../controllers/edutron.user.controller');
 
     router.get('/getAll/:tableName',edutron.getAllFromTable);
-    router.post('/sessionCreate',user.createSession);
 
     router.post('/createTest',edutron.createTest);
     router.post('/createQuestion',edutron.createQuestion);

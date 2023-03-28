@@ -3,6 +3,7 @@ var crypto = require('crypto');
 const dotenv = require('dotenv');
 const jsontoken = require('jsonwebtoken');
 
+
 function genToken(req) {
     let data = {
         time: Date.now(),
@@ -12,15 +13,51 @@ function genToken(req) {
     console.log(token);
     return token;
 }
+function createSession(req, res, pwhash){
+    let token = genToken(req);
+    tokenRegistration(req,res,token);
+    let ID = getTokenID(req,res,token);
+    let sql = `INSERT INTO user.TokenID ${ID}`
+    connection.query(sql,(err,data) => {
+        if (err) {
+            res.status(500).send({
+                message: err.message || 'Unknown error'
+            })
+        }
+        else {
+            res.send(data);
+        }
+    });
+}
+function tokenRegistration(req,res,token){
+    let sql = `INSERT INTO token.Value ${token}`;
+    connection.query(sql,(err,data) => {
+        if (err) {
+            res.status(500).send({
+                message: err.message || 'Unknown error'
+            })
+        }
+        else {
+            res.send({
+                token
+            })
+        }
+    });
+}
+function getTokenID(req,res,token){
+    let sql = `SELECT ID from token WHERE token.Value = ${token}`
+    connection.query(sql,(err,data) => {
+        if (err) {
+            res.status(500).send({
+                message: err.message || 'Unknown error'
+            })
+        }
+        return data
+    });
+}
 
 
 const validations = {
-    createSession(req, res){
-        if(validations.loggedIn(req,res)){
-            console.log("tru")
-            let token = genToken(req)
-        }
-    },
     getAllUser(res) {
         let sql = 'select * from user';
         connection.query(sql, (err, data) => {
@@ -125,6 +162,7 @@ const validations = {
         );
     },
     loggedIn(req, res) {
+        
         if (validate(req, res)) {
             const loginData = {
                 Name: req.body.UserName,
@@ -142,7 +180,8 @@ const validations = {
                 
             }
             let sql = `select * from user where pwhash = "${loginData.PwHash}"`;
-            return connection.query(sql, loginData, (err, data) => {
+            connection.query(sql, loginData, (err, data) => {
+                
                 if (err) {
                     res.status(500).send({
                         message: err.message || 'Unknown error'
@@ -154,13 +193,13 @@ const validations = {
                             res.status(200).send(
                                 "Successful login!"
                             );
-                            return true;
+                            createSession(req,res,loginData.PwHash);
                         }
                         else if (data.length == 0) {
                             res.send(500,
                                 "User not created."
-                                );
-                                return false;
+                            );
+                            return false;
                             }
                         else if (data.length > 1) {
                             res.send(500,
@@ -175,8 +214,6 @@ const validations = {
                             return false;
                         }
                     }
-
-
                 }
             });
         }
@@ -185,7 +222,7 @@ const validations = {
 function userValidation(req, res, loginData) {
     if (loginData.Name == "") { res.send(400, "Username is empty"); return false;}
     if (loginData.PwHash == "") { res.send(400, "Password is empty"); return false;} 
-    return true;
+    else return true;
 }
 function validate(req, res) {
     if (JSON.stringify(req.body) == '{}') {
