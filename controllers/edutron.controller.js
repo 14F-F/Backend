@@ -156,7 +156,7 @@ const validations = {
                 CategoryID: req.body.CategoryID,
                 Visibility: req.body.Visibility,
                 CreatorID: req.body.CreatorID,
-                CreatedDate: req.body.CreatedDate
+                CreatedDate: Date.now()
             };
             const sql = 'INSERT INTO test SET ? ';
             connection.query(sql,newTest,(err,data)=>{
@@ -182,7 +182,8 @@ const validations = {
             const newQuestion = {
                 QuestionText: req.body.QuestionText,
                 CategoryID: req.body.CategoryID,
-                PhotoID: req.body.PhotoID
+                PhotoID: req.body.PhotoID,
+                CreatorID: req.body.CreatorID
             };
             const sql = 'INSERT INTO question SET ? ';
             connection.query(sql,newQuestion,(err,data)=>{
@@ -226,7 +227,7 @@ const validations = {
     createAnswer(req,res){
         if ( validate(req,res) ) { 
             const newAnswer = {
-                AnswerText: req.body.QuestionText,
+                AnswerText: req.body.AnswerText,
                 Correct: req.body.Correct
             };
             const sql = 'INSERT INTO answer SET ? ';
@@ -280,10 +281,9 @@ const validations = {
                 SolvingCode: req.body.SolvingCode,
                 CategoryID: req.body.CategoryID,
                 Visibility: req.body.Visibility,
-                CreatorID: req.body.CreatorID,
-                CreatedDate: req.body.CreatedDate
+                CreatorID: req.body.CreatorID
             }
-            const sql='update test set Name = ?, SolvingCode = ?, CategoryID = ?, Visibility = ?, CreatorID = ?, CreatedDate = ? where id = ?';
+            const sql='update test set Name = ?, SolvingCode = ?, CategoryID = ?, Visibility = ?, CreatorID = ? where id = ?';
             connection.query(
                 sql,
                 [test.Name, test.SolvingCode, test.CategoryID, test.Visibility, test.CreatorID, test.CreatedDate,id],
@@ -349,7 +349,7 @@ const validations = {
                 Correct: req.body.Correct,
                 AnswerText: req.body.AnswerText
             }
-            const sql='update answer set answertext = ? where id = ?';
+            const sql='update answer set correct = ? answertext = ? where id = ?';
             connection.query(
                 sql,
                 [answer.AnswerText,answer.Correct,id],
@@ -457,61 +457,61 @@ function validate(req,res){
         res.status(400).send({
             message : 'Content can not be empty!'
         });
-        return true;
+        return false;
     }
     if (req.body.Name != undefined && req.body.Name.length > 32) {
             res.status(400).send({
             message : 'Name cant be longer than 32 digits!'
         });
-        return true;
+        return false;
     }
     if (req.body.PhotoID != undefined && req.body.PhotoID.length > 255) {
             res.status(400).send({
             message : 'PhotoID cant be longer than 255 digits!'
         });
-        return true;
+        return false;
     }
     if (req.body.QuestionText != undefined && req.body.QuestionText.length > 255) {
             res.status(400).send({
             message : 'QuestionText cant be longer than 255 digits!'
         });
-        return true;
+        return false;
     }
     if (req.body.AnswerText != undefined &&req.body.AnswerText.length > 255) {
             res.status(400).send({
             message : 'AnswerText cant be longer than 255 digits!'
         });
-        return true;
+        return false;
     }   
-    if (req.body.Correct != undefined && (req.body.Correct == 1 || req.body.Correct == 0)) {
+    if (req.body.Correct != undefined && (req.body.Correct != 1)) {
             res.status(400).send({
             message : 'Correct cant be longer than 1 digits!'
         });
-        return true;
+        return false;
     }   
     if (req.body.SolvingCode != undefined && req.body.SolvingCode.length > 16){
         res.status(400).send({
             message : 'Solving Code cant be longer than 16 digits!'
         });
-        return true;
+        return false;
     }
     if (req.body.CategoryID != undefined && req.body.CategoryID.length > 11){
         res.status(400).send({
             message : 'Category ID cant be longer than 11 digits!'
         });
-        return true;
+        return false;
     }
     if (req.body.Visibility != undefined && req.body.Visibility.length > 11){
         res.status(400).send({
             message : 'Visibility cant be longer than 11 digits!'
         });
-        return true;
+        return false;
     }
     if (req.body.CreatorID != undefined && req.body.CreatorID.length > 11){
         res.status(400).send({
             message : 'Creator ID cant be longer than 11 digits!'
         });
-        return true;
+        return false;
     }
     try{
         var date = new Date(req.body.CreatedDate)
@@ -523,9 +523,9 @@ function validate(req,res){
         res.status(400).send({
             message : 'CreatedDate is not in the correct form (parse error)'
         });
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 module.exports = validations;
