@@ -13,50 +13,6 @@ function genToken(req) {
     console.log(token);
     return token;
 }
-function createSession(req, res, pwhash){
-    let token = genToken(req);
-    tokenRegistration(req,res,token);
-    let ID = getTokenID(req,res,token);
-    let sql = `INSERT INTO user.TokenID ${ID}`
-    connection.query(sql,(err,data) => {
-        if (err) {
-            res.status(500).send({
-                message: err.message || 'Unknown error'
-            })
-        }
-        else {
-            res.send(data);
-        }
-    });
-}
-function tokenRegistration(req,res,token){
-    let sql = `INSERT INTO token.Value ${token}`;
-    connection.query(sql,(err,data) => {
-        if (err) {
-            res.status(500).send({
-                message: err.message || 'Unknown error'
-            })
-        }
-        else {
-            res.send({
-                token
-            })
-        }
-    });
-}
-function getTokenID(req,res,token){
-    let sql = `SELECT ID from token WHERE token.Value = ${token}`
-    connection.query(sql,(err,data) => {
-        if (err) {
-            res.status(500).send({
-                message: err.message || 'Unknown error'
-            })
-        }
-        return data
-    });
-}
-
-
 const validations = {
     getAllUser(res) {
         let sql = 'select * from user';
@@ -191,27 +147,26 @@ const validations = {
                     if (userValidation(req, res, loginData)) {
                         if (data.length == 1) {
                             res.status(200).send(
-                                "Successful login!"
+                            {
+                                token: genToken(req)
+                            }
                             );
-                            createSession(req,res,loginData.PwHash);
+                            console.log("Successful login")
                         }
                         else if (data.length == 0) {
                             res.send(500,
                                 "User not created."
                             );
-                            return false;
                             }
                         else if (data.length > 1) {
                             res.send(500,
                                 'User is logged in more than once.'
                             );
-                            return false;
                         }
                         else {
                             res.send(500,
                                 'Unknown error.'
                             );
-                            return false;
                         }
                     }
                 }
