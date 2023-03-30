@@ -1,6 +1,6 @@
 # Backend applikáció
 
-#### Használt technológia: *[Node.JS](https://nodejs.org/en/about/)*
+#### Használt technológia: *[Node.JS Express](https://expressjs.com/en/resources/glossary.html)*
 
 ### Swagger dokumentáció: *[Swagger dokumentáció (még nem élesített)](https://edutron.net/api/edutron)*
 
