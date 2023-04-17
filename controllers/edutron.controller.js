@@ -50,7 +50,7 @@ const validations = {
     },
     getTestById(req,res){
         const id = req.params.id;
-        const sql ='select * from test where id = ?';
+        const sql =`select * from test where id = ${id}`;
         connection.query(
             sql,
             id,
@@ -100,7 +100,7 @@ const validations = {
         'INNER JOIN question ON test_question.QuestionID = question.ID '+
         'INNER JOIN question_answer ON question.ID = question_answer.QuestionID '+
         'INNER JOIN answer ON question_answer.AnswerID = answer.ID '+
-        'WHERE test.ID = ?';
+        `WHERE test.ID = ${id}`;
         connection.query(
             sql,
             id,
@@ -110,7 +110,7 @@ const validations = {
                     message: err.message || 'Unknown error'
                 })
             }else {
-                if (data.length == 0){
+                if (data.affectedRows == 0){
                     res.status(404).send({
                         message:'Not found.'
                     });
@@ -283,7 +283,7 @@ const validations = {
                 Visibility: req.body.Visibility,
                 CreatorID: req.body.CreatorID
             }
-            const sql='update test set Name = ?, SolvingCode = ?, CategoryID = ?, Visibility = ?, CreatorID = ? where id = ?';
+            const sql=`update test set name = ?, solvingcode = ?, categoryid = ?, visibility = ?, creatorid = ? where id = ${id}`;
             connection.query(
                 sql,
                 [test.Name, test.SolvingCode, test.CategoryID, test.Visibility, test.CreatorID, test.CreatedDate,id],
@@ -292,11 +292,15 @@ const validations = {
                         res.status(500).send({
                             message: err.message || 'Unknown error'
                         })
-                    }else {
+                    }
+                    else {
+                        console.log(test)
+                        console.log(data)
                         if (data.affectedRows == 0){
                             res.status(404).send({
-                                message : `Not found test witd id: ${req.params.id}.`
+                                message : `Not found test with id: ${req.params.id}.`
                             });
+
                             return;
                         }
                         res.send({
@@ -317,7 +321,7 @@ const validations = {
             CreatorID: req.body.CreatorID,
             QuestionText: req.body.QuestionText
         }
-        const sql='update question set categoryid = ?, photoid = ?, CreatorID = ?, questiontext = ? where id = ?';
+        const sql=`update question set categoryid = ?, photoid = ?, CreatorID = ?, questiontext = ? where id = ${id}`;
         connection.query(
             sql,
             [question.CategoryID,question.PhotoID,question.CreatorID,question.QuestionText,id],
@@ -329,7 +333,7 @@ const validations = {
                 }else {
                     if (data.affectedRows == 0){
                         res.status(404).send({
-                            message : `Not found question witd id: ${req.params.id}.`
+                            message : `Not found question with id: ${req.params.id}.`
                         });
                         return;
                     }
@@ -349,11 +353,13 @@ const validations = {
                 Correct: req.body.Correct,
                 AnswerText: req.body.AnswerText
             }
-            const sql='update answer set correct = ? answertext = ? where id = ?';
+            const sql=`UPDATE answer SET Correct = ?, AnswerText = ? WHERE ID = ${id}`;
             connection.query(
                 sql,
                 [answer.AnswerText,answer.Correct,id],
                 (err,data) => {
+                    console.log(answer)
+                    console.log(data)
                     if (err){
                         res.status(500).send({
                             message: err.message || 'Unknown error'
@@ -361,7 +367,7 @@ const validations = {
                     }else {
                         if (data.affectedRows == 0){
                             res.status(404).send({
-                                message : `Not found question witd id: ${req.params.id}.`
+                                message : `Not found answer with id: ${req.params.id}.`
                             });
                             return;
                         }
@@ -483,7 +489,7 @@ function validate(req,res){
         });
         return false;
     }   
-    if (req.body.Correct != undefined && (req.body.Correct != 1)) {
+    if (req.body.Correct != undefined && (req.body.Correct != 1 && req.body.Correct != 0)) {
             res.status(400).send({
             message : 'Correct cant be longer than 1 digits!'
         });

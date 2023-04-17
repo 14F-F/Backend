@@ -1,9 +1,9 @@
 const mysql = require('mysql');
 
 const connection = mysql.createPool({
-    host: '45.67.159.35',
+    host: 'localhost',
     user: 'root',
-    password: 'admin1',
+    password: '',
     database: 'edutron'
 });
 

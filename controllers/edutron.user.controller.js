@@ -14,18 +14,6 @@ function genToken(req) {
     return token;
 }
 const validations = {
-    getAllUser(res) {
-        let sql = 'select * from user';
-        connection.query(sql, (err, data) => {
-            if (err) {
-                res.status(500).send({
-                    message: err.message || 'Unknown error'
-                })
-            } else {
-                res.send(data);
-            }
-        });
-    },
     createUser(req, res) {
         if (validate(req, res)) {
             const newUser = {
@@ -60,16 +48,15 @@ const validations = {
             const id = req.params.id;
             const user = {
                 Name: req.body.Name,
-                PwHash: req.body.PwHash,
+                PwHash: crypto.createHash('md5').update(req.body.Name + req.body.Password).digest('hex'),
                 Role: req.body.Role,
                 InstituteID: req.body.InstituteID,
-                Email: req.body.Email,
-                CreatedAt: req.body.CreatedAt
+                Email: req.body.Email
             }
-            const sql = 'update test set Name = ?, PwHash = ?, Role = ?, InstituteID = ?, Email = ?, CreatedAt = ? where id = ?';
+            const sql = `UPDATE user SET Name = ?, PwHash = ?,Role = ?,InstituteID = ?, Email= ? WHERE ID = ${id}`;
             connection.query(
                 sql,
-                [user.Name, user.PwHash, user.Role, user.InstituteID, user.Email, user.CreatedAt, id],
+                [user.Name, user.PwHash, user.Role, user.InstituteID, user.Email, id],
                 (err, data) => {
                     if (err) {
                         res.status(500).send({
@@ -121,7 +108,7 @@ const validations = {
         
         if (validate(req, res)) {
             const loginData = {
-                Name: req.body.UserName,
+                Name: req.body.Name,
                 PwHash: PwHashCheck()
             }
 
