@@ -28,7 +28,7 @@ module.exports = (app) =>{
 
     router.post('/addUQID',edutron.AddUQID);
     router.put('/updateUQID/:UserID/:QuestionID',edutron.updateUQID);
-    router.delete('/deleteQAID/:UserID/:QuestionID',edutron.deleteUQID);
+    router.delete('/deleteUQID/:UserID/:QuestionID',edutron.deleteUQID);
 
     router.post('/addUAID',edutron.AddUAID);
     router.put('/updateUAID/:id',edutron.updateUAID);
