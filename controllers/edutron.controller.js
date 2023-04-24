@@ -305,6 +305,7 @@ const validations = {
             });
          }
     },
+
     AddTQID(req,res){
         const newTQ = {
             TestID: LastIDs.TestID,
@@ -325,6 +326,52 @@ const validations = {
             }
         }); 
     },
+    updateTQID(req,res){
+        const TQ = {
+            TestID: LastIDs.TestID,
+            QuestionID: LastIDs.QuestionID
+        };
+        const sql = 'update test_question SET TestID = ?,QuestionID = ?';
+        connection.query(sql,newTQ,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        ...TQ
+                    },
+                ); 
+            }
+        }); 
+    },
+    deleteTQID(req,res){
+        const TestID = req.params.testId;
+        const QuestionID = req.params.questionId;
+        const sql = `delete from test_question where questionId = ${QuestionID} and testId = ${TestID}`;
+        connection.query(
+            sql,[QuestionID,TestID],
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found row with questionId: ${req.params.QuestionID} or testId: ${req.params.TestID}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : 'Row deleted successfully!'
+                    });
+                }
+            }
+        );
+    },
+
     createAnswer(req,res){
         if ( validate(req,res) ) { 
             const newAnswer = {
@@ -351,6 +398,7 @@ const validations = {
          }
 
     },
+
     AddQAID(req,res){
         const newQA = {
             QuestionID : LastIDs.QuestionID,
@@ -373,7 +421,52 @@ const validations = {
             }
         }); 
     },
-
+    updateQAID(req,res){
+        const QA = {
+            QuestionID: LastIDs.QuestionID,
+            AnswerID: LastIDs.AnswerID
+        };
+        const sql = 'update question_answer SET QuestionID = ?,AnswerID = ?';
+        connection.query(sql,QA,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        ...QA
+                    },
+                ); 
+            }
+        }); 
+    },
+    deleteQAID(req,res){
+        const QuestionID = req.params.questionId;
+        const AnswerID = req.params.answerId;
+        const sql = `delete from question_answer where questionId = ${QuestionID} and answerId = ${AnswerID}`;
+        connection.query(
+            sql,[QuestionID,AnswerID],
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found row with questionId: ${req.params.QuestionID} or answerId: ${req.params.AnswerID}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : 'Row deleted successfully!'
+                    });
+                }
+            }
+        );
+    },
+    
     updateTest(req,res){
         if ( validate(req,res) ) { 
             const id = req.params.id;
