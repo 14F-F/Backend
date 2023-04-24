@@ -70,6 +70,55 @@ const validations = {
             }
         });
     },
+    getTestByCategoryId(req,res){
+        const categoryId = req.params.categoryId;
+        const sql = 'SELECT * FROM test '+
+        'INNER JOIN category ON test.CategoryID = category.ID '+
+        `WHERE category.id = ${categoryId}`;
+        connection.query(
+            sql,
+            categoryId,
+            (err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                if (data.length == 0){
+                    res.status(404).send({
+                        message:'Not found.'
+                    });
+                    return;
+                }
+                res.send(data);
+            }
+        });
+    },
+    getTestByUserId(req,res){
+        const userId = req.params.userId;
+        const sql = 'SELECT * FROM test '+
+                    'INNER JOIN user_test ON test.ID = user_test.TestID '+
+                    'INNER JOIN user ON user.ID = user_test.UserID '+
+                    `WHERE user.id = ${userId}`;
+        connection.query(
+            sql,
+            userId,
+            (err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                if (data.length == 0){
+                    res.status(404).send({
+                        message:'Not found.'
+                    });
+                    return;
+                }
+                res.send(data);
+            }
+        });
+    },
     getAllByCategoryId(req,res){
         const id = req.params.id;
         const sql ='SELECT * FROM test WHERE categoryid = ?';
@@ -121,6 +170,58 @@ const validations = {
         });
     },
 
+    getQuestionByTestId(req,res){
+        const id = req.params.id;
+        const sql =
+        'SELECT * FROM question '+
+        'INNER JOIN test_question ON test.ID = test_question.TestID '+
+        'INNER JOIN question ON test_question.QuestionID = question.ID '+
+        `WHERE test.ID = ${id}`;
+        connection.query(
+            sql,
+            id,
+            (err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                if (data.affectedRows == 0){
+                    res.status(404).send({
+                        message:'Not found.'
+                    });
+                    return;
+                }
+                res.send(data);
+            }
+        });
+    },
+    getAnswerByQuestionId(req,res){
+        const id = req.params.id;
+        const sql =
+        'SELECT * FROM answer '+
+        'INNER JOIN question_answer ON answer.ID = question_answer.AnswerID '+
+        'INNER JOIN question ON question_answer.QuestionID = question.ID '+
+        `WHERE question.ID = ${id}`;
+        connection.query(
+            sql,
+            id,
+            (err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                if (data.affectedRows == 0){
+                    res.status(404).send({
+                        message:'Not found.'
+                    });
+                    return;
+                }
+                res.send(data);
+            }
+        });
+    },
 
     logTest(req,res){
         const id = req.params.id;

@@ -4,6 +4,11 @@ module.exports = (app) =>{
     const user = require('../controllers/edutron.user.controller');
 
     router.get('/getAll/:tableName',edutron.getAllFromTable);
+    router.get('/test/:userId',edutron.getTestByUserId);
+    router.get('/test/:categoryId',edutron.getTestByCategoryId);
+    
+    router.get('/question/:testId',edutron.getQuestionByTestId);
+    router.get('/answer/:questionId',edutron.getAnswerByQuestionId);
 
     router.post('/createTest',edutron.createTest);
     router.post('/createQuestion',edutron.createQuestion);
