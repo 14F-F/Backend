@@ -100,10 +100,17 @@ const validations = {
             userId,
             (err,data)=>{
             if (err){
+                if(err.message == "ER_NONUNIQ_TABLE: Not unique table/alias: 'question'"){
+                    res.status(500).send({
+                        message: 'Connecting table is empty.'
+                    })
+                }
+                else{
                 res.status(500).send({
                     message: err.message || 'Unknown error'
                 })
-            }else {
+            }}
+            else {
                 if (data.length == 0){
                     res.status(404).send({
                         message:'Not found.'
