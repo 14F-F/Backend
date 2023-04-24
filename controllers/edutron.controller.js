@@ -1,9 +1,4 @@
 const connection = require('../config/db');
-const LastIDs = {
-    TestID: 0,
-    QuestionID: 0,
-    AnswerID: 0
-}
 
 const validations = {
     // ONLY FOR TEST PURPOSES
@@ -98,7 +93,7 @@ const validations = {
         const userId = req.params.userId;
         const sql = 'SELECT * FROM test '+
                     'INNER JOIN user_test ON test.ID = user_test.TestID '+
-                    'INNER JOIN user ON user.ID = user_test.UserID '+
+                    'INNER JOIN user ON user_test.UserID = user.ID  '+
                     `WHERE user.id = ${userId}`;
         connection.query(
             sql,
@@ -305,11 +300,37 @@ const validations = {
             });
          }
     },
+    createAnswer(req,res){
+        if ( validate(req,res) ) { 
+            const newAnswer = {
+                AnswerText: req.body.AnswerText,
+                Correct: req.body.Correct
+            };
+            const sql = 'INSERT INTO answer SET ? ';
+            connection.query(sql,newAnswer,(err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }
+                else {
+                    res.send(
+                        {
+                            id: data.insertId,
+                            ...newAnswer
+                        }
+                    );
+                    LastIDs.AnswerID = data.insertId;
+                }
+            });
+         }
+
+    },
 
     AddTQID(req,res){
         const newTQ = {
-            TestID: LastIDs.TestID,
-            QuestionID: LastIDs.QuestionID
+            TestID: req.body.TestID,
+            QuestionID: req.body.QuestionID
         };
         const sql2 = 'INSERT INTO test_question SET ? ';
         connection.query(sql2,newTQ,(err,data)=>{
@@ -327,11 +348,13 @@ const validations = {
         }); 
     },
     updateTQID(req,res){
-        const TQ = {
-            TestID: LastIDs.TestID,
-            QuestionID: LastIDs.QuestionID
+        const TestID = req.params.TestID;
+        const QuestionID = req.params.QuestionID;
+        const newTQ = {
+            TestID: req.body.TestID,
+            QuestionID: req.body.QuestionID
         };
-        const sql = 'update test_question SET TestID = ?,QuestionID = ?';
+        const sql = `update test_question SET TestID = ?,QuestionID = ? where TestID = ${TestID} and QuestionID = ${QuestionID}`;
         connection.query(sql,newTQ,(err,data)=>{
             if (err){
                 res.status(500).send({
@@ -371,38 +394,11 @@ const validations = {
             }
         );
     },
-
-    createAnswer(req,res){
-        if ( validate(req,res) ) { 
-            const newAnswer = {
-                AnswerText: req.body.AnswerText,
-                Correct: req.body.Correct
-            };
-            const sql = 'INSERT INTO answer SET ? ';
-            connection.query(sql,newAnswer,(err,data)=>{
-                if (err){
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                }
-                else {
-                    res.send(
-                        {
-                            id: data.insertId,
-                            ...newAnswer
-                        }
-                    );
-                    LastIDs.AnswerID = data.insertId;
-                }
-            });
-         }
-
-    },
-
+//
     AddQAID(req,res){
         const newQA = {
-            QuestionID : LastIDs.QuestionID,
-            AnswerID : LastIDs.AnswerID
+            QuestionID : req.body.QuestionID,
+            AnswerID : req.body.AnswerID
         };
         const sql2 = 'INSERT INTO question_answer SET ? ';
         connection.query(sql2,newQA,(err,data)=>{
@@ -413,7 +409,6 @@ const validations = {
             }else {
                 res.send(
                     {
-                        id: data.insertId,
                         ...newQA
                     },
                     
@@ -422,11 +417,13 @@ const validations = {
         }); 
     },
     updateQAID(req,res){
+        const QuestionID= req.params.QuestionID;
+        const AnswerID= req.params.AnswerID;
         const QA = {
-            QuestionID: LastIDs.QuestionID,
-            AnswerID: LastIDs.AnswerID
+            QuestionID: req.body.QuestionID,
+            AnswerID: req.body.AnswerID
         };
-        const sql = 'update question_answer SET QuestionID = ?,AnswerID = ?';
+        const sql = `update question_answer SET QuestionID = ?,AnswerID = ? where QuestionID = ${QuestionID} and AnswerID = ${AnswerID}`;
         connection.query(sql,QA,(err,data)=>{
             if (err){
                 res.status(500).send({
@@ -466,7 +463,219 @@ const validations = {
             }
         );
     },
-    
+//
+    AddUTID(req,res){
+        const newUT = {
+            TestID : req.body.TestID,
+            UserID : req.body.UserID
+        };
+        const sql2 = 'INSERT INTO user_test SET ? ';
+        connection.query(sql2,newUT,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        ...newUT
+                    },
+                    
+                ); 
+            }
+        }); 
+    },
+    updateUTID(req,res){
+        const UserID = req.params.UserID; 
+        const TestID = req.params.TestID; 
+        const UT = {
+            UserID: req.body.UserID,
+            TestID: req.body.TestID
+        };
+        const sql = `update user_test set userid = ?, testid = ? where UserID = ${UserID} and TestID = ${TestID}`;
+        connection.query(sql,UT,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        ...UT
+                    },
+                ); 
+            }
+        }); 
+    },
+    deleteUTID(req,res){
+        const UserID = req.params.userId;
+        const TestID = req.params.testId;
+        const sql = `delete from user_test where userId = ${UserID} and testId = ${TestID}`;
+        connection.query(
+            sql,[UserID,TestID],
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found row with userId: ${req.params.userId} or testId: ${req.params.testId}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : 'Row deleted successfully!'
+                    });
+                }
+            }
+        );
+    },
+//
+    AddUQID(req,res){
+        const newUQ = {
+            QuestionID : req.body.QuestionID,
+            UserID : req.body.UserID
+        };
+        const sql2 = 'INSERT INTO user_question SET ? ';
+        connection.query(sql2,newUQ,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        ...newUQ
+                    },
+                    
+                ); 
+            }
+        }); 
+    },
+    updateUQID(req,res){
+        const UserID= req.params.UserID;
+        const QuestionID= req.params.QuestionID;
+        const UQ = {
+            UserID: req.body.UserID,
+            QuestionID: req.body.QuestionID
+        };
+        const sql = `update user_question set userid = ? questionid = ? where UserID = ${UserID} and QuestionID = ${QuestionID}`;
+        connection.query(sql,UT,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        ...UQ
+                    },
+                ); 
+            }
+        }); 
+    },
+    deleteUQID(req,res){
+        const UserID = req.params.userId;
+        const QuestionID = req.params.questionId;
+        const sql = `delete from user_test where userId = ${UserID} and testId = ${QuestionID}`;
+        connection.query(
+            sql,[UserID,QuestionID],
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found row with userId: ${req.params.userId} or questionId: ${req.params.questionId}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : 'Row deleted successfully!'
+                    });
+                }
+            }
+        );
+    },
+//
+    AddUAID(req,res){
+        const newUA = {
+            UserID : req.body.UserID,
+            TestID : req.body.TestID,
+            QuestionID : req.body.QuestionID,
+            AnswerID : req.body.AnswerID,
+            Result : req.body.Result
+        };
+        const sql2 = 'INSERT INTO user_answer SET ? ';
+        connection.query(sql2,newUA,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        id: data.insertId,
+                        ...newUA
+                    },
+                    
+                ); 
+            }
+        }); 
+    },
+    updateUAID(req,res){
+        const id = req.params.id;
+        const UA = {
+            UserID : req.body.UserID,
+            TestID : req.body.TestID,
+            QuestionID : req.body.QuestionID,
+            AnswerID : req.body.AnswerID,
+            Result : req.body.Result
+        };
+        const sql = `update user_answer SET UserID = ?,TestID = ?,QuestionID = ?,AnswerID = ?,Result = ? WHERE id = ${id}`;
+        connection.query(sql,UA,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        ...UA
+                    },
+                ); 
+            }
+        }); 
+    },
+    deleteUAID(req,res){
+        const id = req.params.id;
+        const sql = `delete from user_answer where id = ${id}`;
+        connection.query(
+            sql,id,
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found row with id : ${req.params.id}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : 'Row deleted successfully!'
+                    });
+                }
+            }
+        );
+    },
+//    
     updateTest(req,res){
         if ( validate(req,res) ) { 
             const id = req.params.id;

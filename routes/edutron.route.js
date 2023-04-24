@@ -4,8 +4,8 @@ module.exports = (app) =>{
     const user = require('../controllers/edutron.user.controller');
 
     router.get('/getAll/:tableName',edutron.getAllFromTable);
-    router.get('/test/:userId',edutron.getTestByUserId);
-    router.get('/test/:categoryId',edutron.getTestByCategoryId);
+    router.get('/testByUser/:userId',edutron.getTestByUserId);
+    router.get('/testByCategory/:categoryId',edutron.getTestByCategoryId);
     
     router.get('/question/:testId',edutron.getQuestionByTestId);
     router.get('/answer/:questionId',edutron.getAnswerByQuestionId);
@@ -17,9 +17,22 @@ module.exports = (app) =>{
     router.post('/addTQID',edutron.AddTQID);
     router.put('/updateTQID/:TestID/:QuestionID',edutron.updateTQID);
     router.delete('/deleteTQID/:TestID/:QuestionID',edutron.deleteTQID);
+
     router.post('/addQAID',edutron.AddQAID);
     router.put('/updateQAID/:QuestionID/:AnswerID',edutron.updateQAID);
     router.delete('/deleteQAID/:QuestionID/:AnswerID',edutron.deleteQAID);
+
+    router.post('/addUTID',edutron.AddUTID);
+    router.put('/updateUTID/:UserID/:TestID',edutron.updateUTID);
+    router.delete('/deleteUTID/:UserID/:TestID',edutron.deleteUTID);
+
+    router.post('/addUQID',edutron.AddUQID);
+    router.put('/updateUQID/:UserID/:QuestionID',edutron.updateUQID);
+    router.delete('/deleteQAID/:UserID/:QuestionID',edutron.deleteUQID);
+
+    router.post('/addUAID',edutron.AddUAID);
+    router.put('/updateUAID/:id',edutron.updateUAID);
+    router.delete('/deleteUAID/:id',edutron.deleteUAID);
 
 
     router.post('/testlog',edutron.logTest);
