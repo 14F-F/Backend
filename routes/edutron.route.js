@@ -10,10 +10,6 @@ module.exports = (app) =>{
     router.get('/question/:testId',edutron.getQuestionByTestId);
     router.get('/answer/:questionId',edutron.getAnswerByQuestionId);
 
-    router.post('/createTest',edutron.createTest);
-    router.post('/createQuestion',edutron.createQuestion);
-    router.post('/createAnswer',edutron.createAnswer);
-
     router.post('/addTQID',edutron.AddTQID);
     router.put('/updateTQID/:TestID/:QuestionID',edutron.updateTQID);
     router.delete('/deleteTQID/:TestID/:QuestionID',edutron.deleteTQID);
@@ -34,10 +30,12 @@ module.exports = (app) =>{
     router.put('/updateUAID/:id',edutron.updateUAID);
     router.delete('/deleteUAID/:id',edutron.deleteUAID);
 
+    router.post('/createTest',edutron.createTest);
+    router.post('/createQuestion',edutron.createQuestion);
+    router.post('/createAnswer',edutron.createAnswer);
 
     router.post('/testlog',edutron.logTest);
     router.delete('/clearlogs',edutron.deleteAllLogs);
-
 
     router.put('/updateTest/:id',edutron.updateTest);
     router.put('/updateQuestion/:id',edutron.updateQuestion);

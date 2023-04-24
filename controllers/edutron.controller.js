@@ -166,12 +166,12 @@ const validations = {
     },
 
     getQuestionByTestId(req,res){
-        const id = req.params.id;
+        const id = req.params.testId;
         const sql =
         'SELECT * FROM question '+
         'INNER JOIN test_question ON test.ID = test_question.TestID '+
         'INNER JOIN question ON test_question.QuestionID = question.ID '+
-        `WHERE test.ID = ${id}`;
+        `WHERE test.id = ${id} `;
         connection.query(
             sql,
             id,
@@ -192,12 +192,12 @@ const validations = {
         });
     },
     getAnswerByQuestionId(req,res){
-        const id = req.params.id;
+        const id = req.params.questionId;
         const sql =
         'SELECT * FROM answer '+
         'INNER JOIN question_answer ON answer.ID = question_answer.AnswerID '+
         'INNER JOIN question ON question_answer.QuestionID = question.ID '+
-        `WHERE question.ID = ${id}`;
+        `WHERE question.ID = ${id} `;
         connection.query(
             sql,
             id,
