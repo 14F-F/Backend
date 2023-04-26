@@ -257,7 +257,7 @@ const validations = {
                 Name: req.body.Name,
             };
             const sql = 'INSERT INTO category SET ? ';
-            connection.query(sql,newTest,(err,data)=>{
+            connection.query(sql,newCategory,(err,data)=>{
                 if (err){
                     res.status(500).send({
                         message: err.message || 'Unknown error'
