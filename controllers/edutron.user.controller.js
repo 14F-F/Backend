@@ -39,13 +39,14 @@ const validations = {
     },
     createUser(req, res) {
         if (validate(req, res)) {
+			const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const newUser = {
                 Name: req.body.Name,
                 PwHash: crypto.createHash('md5').update(req.body.Name + req.body.Password).digest('hex'),
                 Role: req.body.Role,
                 InstituteID: req.body.InstituteID,
                 Email: req.body.Email,
-                CreatedAt: Date.now()
+                CreatedAt: date
             };
             const sql = 'INSERT INTO user SET ? ';
             // Új felhasználó felvitele

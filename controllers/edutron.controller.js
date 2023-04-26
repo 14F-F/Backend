@@ -1,25 +1,6 @@
 const connection = require('../config/db');
 
 const validations = {
-    // ONLY FOR TEST PURPOSES
-
-    getAllFromTable(req,res){
-        const table = req.params.tableName;
-        const sql = `SELECT * FROM ${table}`;
-        connection.query(
-            sql,
-            (err,data)=>{
-                if(err){
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                }
-                else{
-                    res.send(data);
-                }
-            }
-        );
-    },
     deleteAllLogs(req,res){
         const sql = 'delete from user_answer';
         connection.query(
@@ -251,39 +232,17 @@ const validations = {
             }
         });
     },
-	createCategory(req,res){
-        if ( validate(req,res) ) { 
-            const newCategory = {
-                Name: req.body.Name,
-            };
-            const sql = 'INSERT INTO category SET ? ';
-            connection.query(sql,newCategory,(err,data)=>{
-                if (err){
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                }
-                else {
-                    res.send(
-                        {
-                            id: data.insertId,
-                            ...newCategory,
-                        }
-                    );
-                    LastIDs.TestID = data.insertId; 
-                }
-            });
-		}   
-    },
+	
     createTest(req,res){
         if ( validate(req,res) ) { 
+			const date = new Date();
             const newTest = {
                 Name: req.body.Name,
                 SolvingCode: req.body.SolvingCode,
                 CategoryID: req.body.CategoryID,
                 Visibility: req.body.Visibility,
                 CreatorID: req.body.CreatorID,
-                CreatedDate: Date.now()
+                CreatedDate: date.now()
             };
             const sql = 'INSERT INTO test SET ? ';
             connection.query(sql,newTest,(err,data)=>{

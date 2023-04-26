@@ -2,8 +2,9 @@ module.exports = (app) =>{
     const router = require('express').Router();
     const edutron = require('../controllers/edutron.controller');
     const user = require('../controllers/edutron.user.controller');
+	const admin = require('../controllers/edutron.admin.controller');
 
-    router.get('/getAll/:tableName',edutron.getAllFromTable);
+    router.get('/getAll/:tableName',admin.getAllFromTable);
     router.get('/testByUser/:userId',edutron.getTestByUserId);
     router.get('/testByCategory/:categoryId',edutron.getTestByCategoryId);
     
@@ -49,7 +50,13 @@ module.exports = (app) =>{
     router.get('/test/:id',edutron.getTestById);
     router.get('/testdata/:id',edutron.getAllTestDataById);
 	
-	router.post('/createCategory',edutron.createCategory);
+	router.post('/createCategory',admin.createCategory);
+	router.put('/updateCategory/:id',admin.updateCategory);
+	router.delete('/deleteCategory/:id',admin.deleteCategory);
+	
+	router.post('/createRole',admin.createRole);
+	router.put('/updateRole/:id',admin.updateRole);
+	router.delete('/deleteRole/:id',admin.deleteRole);
 
     // User methods
     router.get('/user/:id',user.getUserById);
