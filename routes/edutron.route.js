@@ -49,7 +49,7 @@ module.exports = (app) =>{
     router.get('/test/:id',edutron.getTestById);
     router.get('/testdata/:id',edutron.getAllTestDataById);
 	
-	router.get('/createCategory',edutron.createCategory);
+	router.post('/createCategory',edutron.createCategory);
 
     // User methods
     router.get('/user/:id',user.getUserById);
