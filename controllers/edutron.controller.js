@@ -251,6 +251,30 @@ const validations = {
             }
         });
     },
+	createCategory(req,res){
+        if ( validate(req,res) ) { 
+            const newCategory = {
+                Name: req.body.Name,
+            };
+            const sql = 'INSERT INTO category SET ? ';
+            connection.query(sql,newTest,(err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }
+                else {
+                    res.send(
+                        {
+                            id: data.insertId,
+                            ...newCategory,
+                        }
+                    );
+                    LastIDs.TestID = data.insertId; 
+                }
+            });
+		}   
+    },
     createTest(req,res){
         if ( validate(req,res) ) { 
             const newTest = {
