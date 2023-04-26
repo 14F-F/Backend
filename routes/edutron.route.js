@@ -57,6 +57,10 @@ module.exports = (app) =>{
 	router.post('/createRole',admin.createRole);
 	router.put('/updateRole/:id',admin.updateRole);
 	router.delete('/deleteRole/:id',admin.deleteRole);
+	
+	router.post('/createInstitute',admin.createInstitute);
+	router.put('/updateInstitute/:id',admin.updateInstitute);
+	router.delete('/deleteInstitute/:id',admin.deleteInstitute);
 
     // User methods
     router.get('/user/:id',user.getUserById);

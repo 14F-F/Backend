@@ -132,6 +132,7 @@ const validations = {
         }); 
     },
 	deleteRole(req,res){
+		
         const id = req.params.id;
         const sql = 'delete from role where id = ?';
         connection.query(
@@ -155,7 +156,78 @@ const validations = {
                 }
             }
         );
-    }
+    },
+
+	createInstitute(req,res){
+        if ( validate(req,res) ) { 
+            const newInstitute = {
+				ID : req.body.id,
+				Name : req.body.Name
+				
+            };
+            const sql = 'INSERT INTO institute SET ? ';
+            connection.query(sql,newInstitute,(err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }
+                else {
+                    res.send(
+                        {
+                            ...newInstitute,
+                        }
+                    );
+                }
+            });
+		}   
+    },
+	updateInstitute(req,res){
+        const id = req.params.id;
+        const newInstitute = {
+            ID: id,
+			Name: req.body.Name
+        };
+        const sql = `update institute SET ID = ?,Name = ? where id = ${id}`;
+        connection.query(sql,newInstitute,(err,data)=>{
+            if (err){
+                res.status(500).send({
+                    message: err.message || 'Unknown error'
+                })
+            }else {
+                res.send(
+                    {
+                        ...newInstitute
+                    },
+                ); 
+            }
+        }); 
+    },
+	deleteInstitute(req,res){
+        const id = req.params.id;
+        const sql = 'delete from institute where id = ?';
+        connection.query(
+            sql,
+            id,
+            (err,data)=>{
+                if (err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }else {
+                    if (data.affectedRows == 0){
+                        res.status(404).send({
+                            message : `Not found intitute with id: ${req.params.id}.`
+                        });
+                        return;
+                    }
+                    res.send({
+                       message : `Institute with id: ${id} was deleted successfully!`
+                    });
+                }
+            }
+        );
+	}
 }
 function validate(req,res){      
     if (JSON.stringify(req.body) == '{}'){
