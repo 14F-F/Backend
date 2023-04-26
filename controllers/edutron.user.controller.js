@@ -14,6 +14,29 @@ function genToken(req) {
     return token;
 }
 const validations = {
+    getUserById(req,res) {
+        const id = req.params.id;
+        const sql = `SELECT * FROM user WHERE id = ${id}`;
+        connection.query(
+            sql,
+            (err,data)=>{
+                if(err){
+                    res.status(500).send({
+                        message: err.message || 'Unknown error'
+                    })
+                }
+                else {
+                    if (data.length == 0){
+                        res.status(404).send({
+                            message:'Not found.'
+                        });
+                        return;
+                    }
+                    res.send(data);
+                }
+            }
+        );
+    },
     createUser(req, res) {
         if (validate(req, res)) {
             const newUser = {
