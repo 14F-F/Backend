@@ -50,7 +50,7 @@ module.exports = (app) =>{
     router.get('/testdata/:id',edutron.getAllTestDataById);
 
     // User methods
-    router.get('user/:id',user.getUserById);
+    router.get('/user/:id',user.getUserById);
     router.post('/register',user.createUser);
     router.put('/updateUser/:id',user.updateUser);
     router.delete('/deleteUser/:id',user.deleteUser);
