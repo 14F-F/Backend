@@ -235,14 +235,14 @@ const validations = {
 	
     createTest(req,res){
         if ( validate(req,res) ) { 
-			const date = new Date();
+		const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const newTest = {
                 Name: req.body.Name,
                 SolvingCode: req.body.SolvingCode,
                 CategoryID: req.body.CategoryID,
                 Visibility: req.body.Visibility,
                 CreatorID: req.body.CreatorID,
-                CreatedDate: date.now()
+                CreatedDate: date
             };
             const sql = 'INSERT INTO test SET ? ';
             connection.query(sql,newTest,(err,data)=>{
