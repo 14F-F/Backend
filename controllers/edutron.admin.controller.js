@@ -161,9 +161,8 @@ const validations = {
 	createInstitute(req,res){
         if ( validate(req,res) ) { 
             const newInstitute = {
-				ID : req.body.id,
+				ID : req.body.ID,
 				Name : req.body.Name
-				
             };
             const sql = 'INSERT INTO institute SET ? ';
             connection.query(sql,newInstitute,(err,data)=>{
