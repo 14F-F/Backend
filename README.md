@@ -2,7 +2,7 @@
 
 #### Használt technológia: *[Node.JS Express](https://expressjs.com/en/resources/glossary.html)*
 
-### Swagger dokumentáció (még nem élesített): *[Swagger dokumentáció](https://edutron-backend.cyclic.app/api-docs)*
+### Postman dokumentáció (még nem élesített): *[Postman dokumentáció](postásember)*
 
 ##### Ellenőrizte:
 - Bólya Gábor
