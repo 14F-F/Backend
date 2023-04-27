@@ -2,7 +2,9 @@
 
 #### Használt technológia: *[Node.JS Express](https://expressjs.com/en/resources/glossary.html)*
 
-### Postman dokumentáció (még nem élesített): *[Postman dokumentáció](https://documenter.getpostman.com/view/27147863/2s93eR6GPw)*
+### Postman dokumentáció: *[Postman dokumentáció, main](https://documenter.getpostman.com/view/27147863/2s93eR6GPw)*
+### Postman dokumentáció: *[Postman dokumentáció, user](https://documenter.getpostman.com/view/27147863/2s93eR6GPy)*
+### Postman dokumentáció: *[Postman dokumentáció, admin](https://documenter.getpostman.com/view/27147863/2s93eR6GPz)*
 
 ##### Ellenőrizte:
 - Bólya Gábor
