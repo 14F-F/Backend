@@ -2,8 +2,8 @@ const connection = require('../config/db');
 var crypto = require('crypto');
 const dotenv = require('dotenv');
 const jsontoken = require('jsonwebtoken');
-
-
+const auth = require('../config/auth');
+const value = require('../config/defRoles')
 function genToken(req) {
     let data = {
         time: Date.now(),
@@ -14,21 +14,21 @@ function genToken(req) {
     return token;
 }
 const validations = {
-    getUserById(req,res) {
+    getUserById(req, res) {
         const id = req.params.id;
         const sql = `SELECT * FROM user WHERE id = ${id}`;
         connection.query(
             sql,
-            (err,data)=>{
-                if(err){
+            (err, data) => {
+                if (err) {
                     res.status(500).send({
                         message: err.message || 'Unknown error'
                     })
                 }
                 else {
-                    if (data.length == 0){
+                    if (data.length == 0) {
                         res.status(404).send({
-                            message:'Not found.'
+                            message: 'Not found.'
                         });
                         return;
                     }
@@ -39,7 +39,7 @@ const validations = {
     },
     createUser(req, res) {
         if (validate(req, res)) {
-			const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const newUser = {
                 Name: req.body.Name,
                 PwHash: crypto.createHash('md5').update(req.body.Name + req.body.Password).digest('hex'),
@@ -104,32 +104,34 @@ const validations = {
     },
     /////////////////////////////////////////////////////////////
     deleteUser(req, res) {
-        const id = req.params.id;
-        const sql = 'delete from user where id = ?';
-        connection.query(
-            sql,
-            id,
-            (err, data) => {
-                if (err) {
-                    res.status(500).send({
-                        message: err.message || 'Unknown error'
-                    })
-                } else {
-                    if (data.affectedRows == 0) {
-                        res.status(404).send({
-                            message: `Not found user witd id: ${req.params.id}.`
+        if (auth.sessionCheck(req, res, value.admin)) {
+            const id = req.params.id;
+            const sql = 'delete from user where id = ?';
+            connection.query(
+                sql,
+                id,
+                (err, data) => {
+                    if (err) {
+                        res.status(500).send({
+                            message: err.message || 'Unknown error'
+                        })
+                    } else {
+                        if (data.affectedRows == 0) {
+                            res.status(404).send({
+                                message: `Not found user witd id: ${req.params.id}.`
+                            });
+                            return;
+                        }
+                        res.send({
+                            message: 'User was deleted successfully!'
                         });
-                        return;
                     }
-                    res.send({
-                        message: 'User was deleted successfully!'
-                    });
                 }
-            }
-        );
+            );
+        }
     },
     loggedIn(req, res) {
-        
+
         if (validate(req, res)) {
             const loginData = {
                 Name: req.body.Name,
@@ -144,11 +146,11 @@ const validations = {
                     PwHash = "";
                 }
                 return PwHash;
-                
+
             }
             let sql = `select * from user where pwhash = "${loginData.PwHash}"`;
             connection.query(sql, loginData, (err, data) => {
-                
+
                 if (err) {
                     res.status(500).send({
                         message: err.message || 'Unknown error'
@@ -158,9 +160,9 @@ const validations = {
                     if (userValidation(req, res, loginData)) {
                         if (data.length == 1) {
                             res.status(200).send(
-                            {
-                                token: genToken(req)
-                            }
+                                {
+                                    token: genToken(req)
+                                }
                             );
                             console.log("Successful login")
                         }
@@ -168,7 +170,7 @@ const validations = {
                             res.send(500,
                                 "User not created."
                             );
-                            }
+                        }
                         else if (data.length > 1) {
                             res.send(500,
                                 'User is logged in more than once.'
@@ -186,8 +188,8 @@ const validations = {
     },
 }
 function userValidation(req, res, loginData) {
-    if (loginData.Name == "") { res.send(400, "Username is empty"); return false;}
-    if (loginData.PwHash == "") { res.send(400, "Password is empty"); return false;} 
+    if (loginData.Name == "") { res.send(400, "Username is empty"); return false; }
+    if (loginData.PwHash == "") { res.send(400, "Password is empty"); return false; }
     else return true;
 }
 function validate(req, res) {
