@@ -104,7 +104,7 @@ const validations = {
     },
     /////////////////////////////////////////////////////////////
     deleteUser(req, res) {
-        if (auth.sessionCheck(req, res, value.admin)) {
+        if (auth.roleCheck(req, res, value.admin)) {
             const id = req.params.id;
             const sql = 'delete from user where id = ?';
             connection.query(
